@@ -1,51 +1,21 @@
-﻿using FighterMaker.Mono.Library.Interfaces;
+﻿using FighterMaker.Mono.Library.Enumerations;
+using FighterMaker.Mono.Library.Extensions;
+using FighterMaker.Mono.Library.Interfaces;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
+using System;
 using System.Collections.Generic;
 
 namespace FighterMaker.Mono.Library
 {
     /// <summary>
-    /// Representa um frame de uma textura de folha de sprites.
-    /// </summary>
-    public class SpriteSheetFrame
-    {
-        /// <summary>
-        /// Obtém ou define os limites do frame.
-        /// </summary>
-        public Rectangle Bounds { get; set; }
-
-        /// <summary>
-        /// Obtém ou define a duração do frame em milisegundos.
-        /// Caso nulo será utilizado o valor da propriedade Duration da classe SpriteSheetAnimation.
-        /// </summary>
-        public int? Duration { get; set; } = null;
-
-        /// <summary>
-        /// Obtém ou define os efeitos de espelhamento do frame.
-        /// </summary>
-        public SpriteEffects Effects { get; set; } = SpriteEffects.None;
-
-        /// <summary>
-        /// Obtém ou define a posição do eixo do frmae.
-        /// </summary>
-        public Vector2? Origin { get; set; } = null;
-
-        /// <summary>
-        /// Obtém ou define a escala de tamanho do frame
-        /// </summary>
-        public Vector2? Scale { get; set; } = null;
-    }
-
-    /// <summary>
     /// Representa uma animação baseada em uma folha de sprites.
     /// </summary>
     public class SpriteSheetAnimation : IAnimation
     {
-        static readonly Vector2 DefaultOrigin = Vector2.Zero;
         static readonly Vector2 DefaultScale = Vector2.One;
 
-        SpriteSheetFrame currentFrame;
+        AnimationFrame currentFrame;
         int currentFrameIndex;
         int elapsedTime = 0;
 
@@ -62,7 +32,7 @@ namespace FighterMaker.Mono.Library
         /// <summary>
         /// Obtém ou define os frames da animação contidos na folha de sprites.
         /// </summary>
-        public List<SpriteSheetFrame> Frames { get; set; }
+        public List<AnimationFrame> Frames { get; set; }
 
         /// <summary>
         /// Obtém ou define a posição do desenho do frame na janela de jogo.
@@ -72,12 +42,21 @@ namespace FighterMaker.Mono.Library
         /// <summary>
         /// Obtém ou define a duração padrão de cada frame em milisegundos.
         /// </summary>
-        public int Duration { get; set; } = 15;           
+        public int Duration { get; set; } = 15;
 
-        public SpriteSheetAnimation(string Name, List<SpriteSheetFrame> frames)
+        /// <summary>
+        /// Obtém ou define o ponto de origem padrão para exibição de cada quadro.
+        /// </summary>
+        public OriginPoint DefaultOrigin { get; set; } = OriginPoint.TopLeft;
+
+        public SpriteSheetAnimation(string animationName, Texture2D spriteSheetTexture, List<AnimationFrame> frames)
         {
-            this.Name = Name;
-            this.Frames = frames ?? new List<SpriteSheetFrame>();
+            SpriteSheetTexture = spriteSheetTexture ?? throw new ArgumentNullException(nameof(spriteSheetTexture));
+
+            Name = animationName;
+            Frames = frames ?? new List<AnimationFrame>();            
+
+            Frames.ForEach(f => f.SourceTexture = spriteSheetTexture);
         }
 
         public void Draw(GameTime gameTime, SpriteBatch spriteBatch)
@@ -87,7 +66,7 @@ namespace FighterMaker.Mono.Library
 
             var sourceRectangle = currentFrame.Bounds;
             var spriteEffects = currentFrame.Effects;
-            var origin = currentFrame.Origin ?? DefaultOrigin;
+            var origin = currentFrame.Origin ?? DefaultOrigin.ToVector2(sourceRectangle);
             var scale = currentFrame.Scale ?? DefaultScale;
 
             spriteBatch.Draw(SpriteSheetTexture, Position, sourceRectangle, Color.White, 0, origin, scale, spriteEffects, 0);

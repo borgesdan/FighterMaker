@@ -10,6 +10,8 @@ namespace FighterMaker.Mono.Library.Interfaces
 {
     public interface IActor
     {
+        Vector2 Position { get; set; }
+
         void Update(GameTime gameTime);
         void Draw(GameTime gameTime, SpriteBatch spriteBatch);
     }
