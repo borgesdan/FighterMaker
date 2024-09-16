@@ -90,41 +90,14 @@ namespace FighterMaker.Visual.Pages
                 var finalX = Math.Clamp(transformValue.X, 0.0, double.MaxValue);
                 var finalY = Math.Clamp(transformValue.Y, 0.0, double.MaxValue);
 
-                CanvasFrameRectangle.SetValue(Canvas.LeftProperty, oldMousePosition.X);
-                CanvasFrameRectangle.SetValue(Canvas.TopProperty, oldMousePosition.Y);
+                var imageLeftTop = CanvasImage.GetCanvasLeftTopProperties();
+
+                CanvasFrameRectangle.SetValue(Canvas.LeftProperty, imageLeftTop.Item1 + oldMousePosition.X);
+                CanvasFrameRectangle.SetValue(Canvas.TopProperty, imageLeftTop.Item2 + oldMousePosition.Y);
 
                 CanvasFrameRectangle.Width = finalX;
                 CanvasFrameRectangle.Height = finalY;
             }
         }
-
-        private void MainCanvas_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
-        {
-            //currentMousePosition = e.GetPosition(MainCanvas);
-            //oldMousePosition = currentMousePosition;
-            //CanvasFrameRectangle.Visibility = Visibility.Hidden;            
-            //CanvasFrameRectangle.Width = 0;
-            //CanvasFrameRectangle.Height = 0;
-        }
-
-        private void MainCanvas_MouseMove(object sender, MouseEventArgs e)
-        {
-            //if(e.LeftButton == MouseButtonState.Pressed)
-            //{
-            //    CanvasFrameRectangle.Visibility = Visibility.Visible;
-            //    currentMousePosition = e.GetPosition(MainCanvas);
-                
-            //    var transformValue = currentMousePosition - oldMousePosition;
-
-            //    var finalX = Math.Clamp(transformValue.X, 0.0, double.MaxValue);
-            //    var finalY = Math.Clamp(transformValue.Y, 0.0, double.MaxValue);
-
-            //    CanvasFrameRectangle.SetValue(Canvas.LeftProperty, oldMousePosition.X);
-            //    CanvasFrameRectangle.SetValue(Canvas.TopProperty, oldMousePosition.Y);
-
-            //    CanvasFrameRectangle.Width = finalX;
-            //    CanvasFrameRectangle.Height = finalY;             
-            //}
-        }        
     }
 }

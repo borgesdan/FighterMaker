@@ -14,9 +14,9 @@
             <RowDefinition />
             <RowDefinition Height="32" />
         </Grid.RowDefinitions>        
-        <Canvas Grid.Row="1" x:Name="MainCanvas" MouseLeftButtonDown="MainCanvas_MouseLeftButtonDown" MouseMove="MainCanvas_MouseMove">
+        <Canvas Grid.Row="1" x:Name="MainCanvas">
             <Image x:Name="CanvasImage" MouseRightButtonDown="CanvasImage_MouseRightButtonDown" MouseLeftButtonDown="CanvasImage_MouseLeftButtonDown" MouseMove="CanvasImage_MouseMove" />            
-            <Rectangle x:Name="CanvasFrameRectangle" Width="200" Height="200" Stroke="Black" Visibility="Hidden" />
+            <Rectangle x:Name="CanvasFrameRectangle" Width="200" Height="200" Stroke="Black" StrokeThickness="2" Visibility="Hidden" />
         </Canvas>
         <Menu Grid.Row="0">
             <Button x:Name="OpenFileButton" Content="O" Height="30" Width="32" Click="OpenFileButton_Click"></Button>
