@@ -39,6 +39,13 @@ namespace FighterMaker.Visual.Pages
         public SpriteSheetManagerPage()
         {
             InitializeComponent();
+        }        
+
+        private void HideFrameRectangle()
+        {
+            CanvasFrameRectangle.Visibility = Visibility.Hidden;
+            CanvasFrameRectangle.Width = 0;
+            CanvasFrameRectangle.Height = 0;
         }
 
         private void OpenFileButton_Click(object sender, RoutedEventArgs e)
@@ -55,6 +62,8 @@ namespace FighterMaker.Visual.Pages
                 CanvasImage.Source = bitmap;
 
                 preventResizeRectangle = true;
+
+                HideFrameRectangle();
             }            
         }
 
@@ -72,9 +81,7 @@ namespace FighterMaker.Visual.Pages
             currentMousePosition = e.GetPosition(CanvasImage);
             selectedRectanglePosition = currentMousePosition;
 
-            CanvasFrameRectangle.Visibility = Visibility.Hidden;
-            CanvasFrameRectangle.Width = 0;
-            CanvasFrameRectangle.Height = 0;
+            HideFrameRectangle();
         }
 
         private void CanvasImage_MouseMove(object sender, MouseEventArgs e)
