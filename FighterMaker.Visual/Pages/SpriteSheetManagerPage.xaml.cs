@@ -126,12 +126,7 @@ namespace FighterMaker.Visual.Pages
 
 
         private void AdjustRectangle()
-        {
-            //https://stackoverflow.com/questions/8311805/bitmapsource-copypixels-byte-bitmapsource-how-to-do-this-simple
-            //https://medium.com/@oleg.shipitko/what-does-stride-mean-in-image-processing-bba158a72bcd
-            //https://stackoverflow.com/questions/16220472/how-to-create-a-bitmapimage-from-a-pixel-byte-array-live-video-display
-            //https://stackoverflow.com/questions/14876989/how-to-read-pixels-in-four-corners-of-a-bitmapsource
-
+        {            
             var bitmap = CanvasImage.Source as BitmapSource;
 
             if (bitmap == null)
@@ -144,59 +139,16 @@ namespace FighterMaker.Visual.Pages
             rect.Width = (int)CanvasFrameRectangle.Width;
             rect.Height = (int)CanvasFrameRectangle.Height;            
 
-            var stride = (bitmap.Format.BitsPerPixel / 8);
-            int[] pixels = new int[rect.Height * rect.Width];            
-            bitmap.CopyPixels(rect, pixels, stride * rect.Width, 0);
-           
-            var y = 0;
-            var x = 0;
-            var width = 0;
-            var height = 0;
-
-            //Definimos o array de pixels em linhas e colunas
-            for (int col = 0; col < rect.Width; ++col)
-            {
-                for (int row = 0; row < rect.Height; ++row)
-                {
-                    //Verificamos os pixels adjacentes e fazemos comparações
-
-                    var currentPixel = pixels[col + (row * rect.Width)];
-
-                    if (col + 1 < rect.Width)
-                    {
-                        var rightPixel = pixels[col + 1 + (row * rect.Width)];
-
-                        if (currentPixel != rightPixel)
-                        {                            
-                            if (x == 0 || col + 1 < x)  //Encontramos o limite esquerdo
-                                x = col + 1;
-                            else if (col + 1 > width) //Encontramos o limite direito
-                                width = col + 1;
-                        }
-                    }
-
-                    if (row + 1 < rect.Height)
-                    {
-                        var bottomPixel = pixels[col + ((row + 1) * rect.Width)];
-
-                        if (currentPixel != bottomPixel)
-                        {                            
-                            if (y == 0 || row + 1 < y) //Encontramos o limite do topo
-                                y = row + 1;
-                            else if (row + 1 > height)  //Encontramos o limite da base
-                                height = row + 1;
-                        }
-                    }
-                }
-            }
+            var bitmapSourceSlice = new BitmapSourceSlice(bitmap, rect);
+            var fittedRect = bitmapSourceSlice.GetFittedRectangle();
 
             var top = (double)CanvasFrameRectangle.GetValue(Canvas.TopProperty);
             var left = (double)CanvasFrameRectangle.GetValue(Canvas.LeftProperty);
             
-            CanvasFrameRectangle.SetValue(Canvas.TopProperty, (double)top + y);
-            CanvasFrameRectangle.SetValue(Canvas.LeftProperty, (double)left + x);
-            CanvasFrameRectangle.Width = width - x;
-            CanvasFrameRectangle.Height = height - y;
+            CanvasFrameRectangle.SetValue(Canvas.LeftProperty, (double)left + fittedRect.X);
+            CanvasFrameRectangle.SetValue(Canvas.TopProperty, (double)top + fittedRect.Y);
+            CanvasFrameRectangle.Width = fittedRect.Width - fittedRect.X;
+            CanvasFrameRectangle.Height = fittedRect.Height - fittedRect.Y;
         }
     }
 }

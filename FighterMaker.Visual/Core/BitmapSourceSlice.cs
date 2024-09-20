@@ -103,3 +103,9 @@ namespace FighterMaker.Visual.Core
         }
     }
 }
+
+//DOCS
+//https://stackoverflow.com/questions/8311805/bitmapsource-copypixels-byte-bitmapsource-how-to-do-this-simple
+//https://medium.com/@oleg.shipitko/what-does-stride-mean-in-image-processing-bba158a72bcd
+//https://stackoverflow.com/questions/16220472/how-to-create-a-bitmapimage-from-a-pixel-byte-array-live-video-display
+//https://stackoverflow.com/questions/14876989/how-to-read-pixels-in-four-corners-of-a-bitmapsource
