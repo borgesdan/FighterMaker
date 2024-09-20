@@ -32,8 +32,6 @@ namespace FighterMaker.Visual.Pages
         Point currentMousePosition;
         Vector2 currentImageCanvasOffset;
         MouseButtonState oldLeftButtonState;
-        BitmapDecoder? bitmapDecoder = null;
-        Stream imageStream;        
 
         public SpriteSheetManagerPage()
         {
@@ -51,17 +49,12 @@ namespace FighterMaker.Visual.Pages
                 var bitmap = new BitmapImage(uri);
 
                 CanvasImage.ResetCanvasTopLeftProperties();
-                CanvasImage.Source = bitmap;
-
-                imageStream = openFileDialog.OpenFile();
-
-                //bitmapDecoder = PngBitmapDecoder.Create(imageStream, BitmapCreateOptions.None, BitmapCacheOption.Default);
+                CanvasImage.Source = bitmap;      
             }
         }
 
         private void CanvasImage_MouseRightButtonDown(object sender, MouseButtonEventArgs e)
         {
-
             currentMousePosition = e.GetPosition(MainCanvas);
             oldMousePosition = currentMousePosition;
 
