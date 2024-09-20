@@ -33,6 +33,9 @@ namespace FighterMaker.Visual.Pages
         Vector2 currentImageCanvasOffset;
         MouseButtonState oldLeftButtonState;
 
+        //Flag para previnir a exibição e redimensionamento do retângulo de seleção após abrir arquivo com dois cliques
+        bool preventResizeRectangle = false;
+
         public SpriteSheetManagerPage()
         {
             InitializeComponent();
@@ -49,8 +52,10 @@ namespace FighterMaker.Visual.Pages
                 var bitmap = new BitmapImage(uri);
 
                 CanvasImage.ResetCanvasTopLeftProperties();
-                CanvasImage.Source = bitmap;      
-            }
+                CanvasImage.Source = bitmap;
+
+                preventResizeRectangle = true;
+            }            
         }
 
         private void CanvasImage_MouseRightButtonDown(object sender, MouseButtonEventArgs e)
@@ -88,6 +93,12 @@ namespace FighterMaker.Visual.Pages
             }
             else if (e.LeftButton == MouseButtonState.Pressed)
             {
+                if (preventResizeRectangle)
+                {
+                    preventResizeRectangle = false;
+                    return;
+                }
+
                 CanvasFrameRectangle.Visibility = Visibility.Visible;
                 currentMousePosition = e.GetPosition(CanvasImage);
 
