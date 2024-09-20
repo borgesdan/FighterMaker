@@ -132,17 +132,17 @@ namespace FighterMaker.Visual.Pages
             //https://stackoverflow.com/questions/16220472/how-to-create-a-bitmapimage-from-a-pixel-byte-array-live-video-display
             //https://stackoverflow.com/questions/14876989/how-to-read-pixels-in-four-corners-of-a-bitmapsource
 
+            var bitmap = CanvasImage.Source as BitmapSource;
+
+            if (bitmap == null)
+                return;
+
             Int32Rect rect;
 
             rect.X = (int)selectedRectanglePosition.X;
             rect.Y = (int)selectedRectanglePosition.Y;
             rect.Width = (int)CanvasFrameRectangle.Width;
-            rect.Height = (int)CanvasFrameRectangle.Height;
-
-            var bitmap = CanvasImage.Source as BitmapSource;
-
-            if (bitmap == null)
-                return;
+            rect.Height = (int)CanvasFrameRectangle.Height;            
 
             var stride = (bitmap.Format.BitsPerPixel / 8);
             int[] pixels = new int[rect.Height * rect.Width];            
@@ -170,7 +170,7 @@ namespace FighterMaker.Visual.Pages
                         {                            
                             if (x == 0 || col + 1 < x)  //Encontramos o limite esquerdo
                                 x = col + 1;
-                            else if (row + 1 > width) //Encontramos o limite direito
+                            else if (col + 1 > width) //Encontramos o limite direito
                                 width = col + 1;
                         }
                     }
