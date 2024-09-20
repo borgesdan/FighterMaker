@@ -1,12 +1,13 @@
 ﻿using System.Windows;
+using System.Windows.Media;
 using System.Windows.Media.Imaging;
+using System.Windows.Media.Media3D;
 
 namespace FighterMaker.Visual.Core
 {
     public class BitmapSourceSlice
     {
         BitmapSource bitmap;
-        int[] pixels;
         Int32Rect sourceRectangle;
 
         /// <summary>
@@ -39,23 +40,37 @@ namespace FighterMaker.Visual.Core
         public BitmapSourceSlice(BitmapSource source, Int32Rect sourceRectangle)
         {
             this.bitmap = source ?? throw new ArgumentNullException(nameof(source));
-            SourceRectangle = sourceRectangle;
-
-            pixels = new int[sourceRectangle.Width * sourceRectangle.Height];
-        }
-
-        void CopyPixels()
-        {
-            bitmap.CopyPixels(sourceRectangle, pixels, Stride, 0);
-        }
+            SourceRectangle = sourceRectangle;            
+        }                
 
         /// <summary>
         /// Obtém um retângulo ajustado, a partir do retângulo de origem, com a exclusão da área de fundo da imagem.
         /// </summary>
         public Int32Rect GetFittedRectangle()
-        {
-            CopyPixels();
+        {            
+            var perPixelRatio = bitmap.Format.BitsPerPixel / 8;
 
+            switch (perPixelRatio)
+            {
+                case 1: //grey scale image 0-255
+                    byte[] byteArray = new byte[sourceRectangle.Width * sourceRectangle.Height];
+                    bitmap.CopyPixels(sourceRectangle, byteArray, Stride, 0);
+                    return GetFittedRectanglePerFormat(byteArray);
+                case 3: //RGB
+                    short[] shortArray = new short[sourceRectangle.Width * sourceRectangle.Height];
+                    bitmap.CopyPixels(sourceRectangle, shortArray, Stride, 0);
+                    return GetFittedRectanglePerFormat(shortArray);
+                case 4: //RGB + alpha
+                    int[] intArray = new int[sourceRectangle.Width * sourceRectangle.Height];
+                    bitmap.CopyPixels(sourceRectangle, intArray, Stride, 0);
+                    return GetFittedRectanglePerFormat(intArray);
+                default:
+                    throw new NotImplementedException();
+            }            
+        }
+
+        private Int32Rect GetFittedRectanglePerFormat<T>(T[] pixelArray) where T : struct
+        {
             var y = 0;
             var x = 0;
             var width = 0;
@@ -68,13 +83,13 @@ namespace FighterMaker.Visual.Core
                 {
                     //Verificamos os pixels adjacentes e fazemos comparações
 
-                    var currentPixel = pixels[col + (row * sourceRectangle.Width)];
+                    var currentPixel = pixelArray[col + (row * sourceRectangle.Width)];
 
                     if (col + 1 < sourceRectangle.Width)
                     {
-                        var rightPixel = pixels[col + 1 + (row * sourceRectangle.Width)];
+                        var rightPixel = pixelArray[col + 1 + (row * sourceRectangle.Width)];
 
-                        if (currentPixel != rightPixel)
+                        if (!EqualityComparer<T>.Default.Equals(currentPixel, rightPixel))
                         {
                             if (x == 0 || col + 1 < x)  //Encontramos o limite esquerdo
                                 x = col + 1;
@@ -85,9 +100,9 @@ namespace FighterMaker.Visual.Core
 
                     if (row + 1 < sourceRectangle.Height)
                     {
-                        var bottomPixel = pixels[col + ((row + 1) * sourceRectangle.Width)];
+                        var bottomPixel = pixelArray[col + ((row + 1) * sourceRectangle.Width)];
 
-                        if (currentPixel != bottomPixel)
+                        if (!EqualityComparer<T>.Default.Equals(currentPixel, bottomPixel))
                         {
                             if (y == 0 || row + 1 < y) //Encontramos o limite do topo
                                 y = row + 1;
@@ -98,7 +113,7 @@ namespace FighterMaker.Visual.Core
                 }
             }
 
-            Int32Rect rect = new Int32Rect(x, y, width, height);
+            var rect = new Int32Rect(x, y, width, height);
             return rect;
         }
     }
