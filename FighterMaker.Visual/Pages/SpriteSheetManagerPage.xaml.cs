@@ -33,7 +33,7 @@ namespace FighterMaker.Visual.Pages
         Vector2 currentImageCanvasOffset;
         MouseButtonState oldLeftButtonState;
         BitmapDecoder? bitmapDecoder = null;
-        Stream imageStream;
+        Stream imageStream;        
 
         public SpriteSheetManagerPage()
         {
