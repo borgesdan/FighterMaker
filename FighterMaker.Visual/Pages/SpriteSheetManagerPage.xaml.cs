@@ -48,6 +48,17 @@ namespace FighterMaker.Visual.Pages
             CanvasFrameRectangle.Height = 0;
         }
 
+        private void SetFrameRectanglePosition()
+        {
+            var imageLeftTop = CanvasImage.GetCanvasLeftTopProperties();
+
+            var left = imageLeftTop.Item1 + selectedRectanglePosition.X;
+            var top = imageLeftTop.Item2 + selectedRectanglePosition.Y;
+
+            CanvasFrameRectangle.SetValue(Canvas.LeftProperty, left);
+            CanvasFrameRectangle.SetValue(Canvas.TopProperty, top);
+        }
+
         private void OpenFileButton_Click(object sender, RoutedEventArgs e)
         {
             OpenFileDialog openFileDialog = new OpenFileDialog();
@@ -81,6 +92,8 @@ namespace FighterMaker.Visual.Pages
             currentMousePosition = e.GetPosition(CanvasImage);
             selectedRectanglePosition = currentMousePosition;
 
+            SetFrameRectanglePosition();
+
             HideFrameRectangle();
         }
 
@@ -111,19 +124,11 @@ namespace FighterMaker.Visual.Pages
 
                 var transformValue = currentMousePosition - selectedRectanglePosition;
 
-                var finalX = Math.Clamp(transformValue.X, 0.0, double.MaxValue);
-                var finalY = Math.Clamp(transformValue.Y, 0.0, double.MaxValue);
+                var width = Math.Clamp(transformValue.X, 0.0, double.MaxValue);
+                var height = Math.Clamp(transformValue.Y, 0.0, double.MaxValue);                
 
-                var imageLeftTop = CanvasImage.GetCanvasLeftTopProperties();
-
-                var left = imageLeftTop.Item1 + selectedRectanglePosition.X;
-                var top = imageLeftTop.Item2 + selectedRectanglePosition.Y;
-
-                CanvasFrameRectangle.SetValue(Canvas.LeftProperty, left);
-                CanvasFrameRectangle.SetValue(Canvas.TopProperty, top);
-
-                CanvasFrameRectangle.Width = finalX;
-                CanvasFrameRectangle.Height = finalY;
+                CanvasFrameRectangle.Width = width;
+                CanvasFrameRectangle.Height = height;
 
                 oldLeftButtonState = e.LeftButton;
             }
@@ -134,7 +139,6 @@ namespace FighterMaker.Visual.Pages
                 AdjustRectangle();
             }
         }
-
 
         private void AdjustRectangle()
         {            
