@@ -1,4 +1,5 @@
-﻿using System;
+﻿using FighterMaker.Visual.Windows;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -23,6 +24,17 @@ namespace FighterMaker.Visual.Pages
         public FighterAnimationEditorPage()
         {
             InitializeComponent();
+        }        
+
+        private void AnimationSequence_AddAnimationButtonClick(object sender, RoutedEventArgs e)
+        {
+            NewAnimationWindow newAnimationWindow = new NewAnimationWindow();
+            var dialogResult = newAnimationWindow.ShowDialog();
+
+            if (dialogResult.HasValue && dialogResult.Value == true)
+            {
+                AnimationSequence.AnimationName = newAnimationWindow.SelectedAnimationName;
+            }
         }
     }
 }

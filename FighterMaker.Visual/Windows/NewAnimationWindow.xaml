@@ -1,0 +1,21 @@
+﻿<Window x:Class="FighterMaker.Visual.Windows.NewAnimationWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:FighterMaker.Visual.Windows"
+        mc:Ignorable="d"
+        Title="New Animation" Height="150" Width="350" WindowStyle="ToolWindow" WindowStartupLocation="CenterScreen" KeyDown="Window_KeyDown">
+    <Grid Margin="5">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="0.2*"/>
+            <RowDefinition />
+            <RowDefinition />
+            <RowDefinition />            
+        </Grid.RowDefinitions>
+        <Rectangle Grid.Row="0" Fill="CornflowerBlue" />
+        <Label Grid.Row="1" Content="Name:" VerticalContentAlignment="Bottom" />
+        <TextBox x:Name="AnimationNameBox" Grid.Row="2" Margin="5" VerticalContentAlignment="Center"/>
+        <Button Grid.Row="3" Content="OK" Width="200" Margin="5" Click="Button_Click"/>
+    </Grid>
+</Window>
