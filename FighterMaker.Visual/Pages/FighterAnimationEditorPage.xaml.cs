@@ -33,7 +33,10 @@ namespace FighterMaker.Visual.Pages
 
             if (dialogResult.HasValue && dialogResult.Value == true)
             {
-                AnimationSequence.AnimationName = newAnimationWindow.SelectedAnimationName;
+                AnimationSequence.SelectedAnimation = new Models.AnimationModel()
+                {
+                    Name = newAnimationWindow.SelectedAnimationName
+                };
             }
         }
     }

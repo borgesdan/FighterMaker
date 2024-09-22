@@ -1,4 +1,5 @@
-﻿using System;
+﻿using FighterMaker.Visual.Models;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -20,21 +21,22 @@ namespace FighterMaker.Visual.Controls
     /// </summary>
     public partial class AnimationSequenceControl : UserControl
     {
-        private string animationName = string.Empty;
-        public string AnimationName 
-        {
-            get => animationName;
+
+        private AnimationModel animationModel;
+        public AnimationModel SelectedAnimation 
+        { 
+            get => animationModel;
             set
             {
-                animationName = value.Trim();
+                animationModel = value;
                 
                 var item = new ComboBoxItem();
-                item.Content = animationName;
-                item.IsSelected = true;                    
+                item.Content = animationModel;
+                item.IsSelected = true;
 
-                NameBox.Items.Add(item);                
-            }
-        }
+                NameBox.Items.Add(item);
+            } 
+        }        
 
         public object SelectedNameBoxItem { get => NameBox.SelectedItem; }
         
@@ -43,7 +45,7 @@ namespace FighterMaker.Visual.Controls
         public AnimationSequenceControl()
         {            
             InitializeComponent();
-        }        
+        }
 
         private void AddAnimationButton_Click(object sender, RoutedEventArgs e)
         {
