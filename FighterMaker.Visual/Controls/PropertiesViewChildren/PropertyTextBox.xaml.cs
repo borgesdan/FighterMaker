@@ -1,4 +1,5 @@
 ﻿using FighterMaker.Visual.Extensions;
+using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
 using System.Reflection;
 using System.Windows.Controls;
@@ -29,30 +30,54 @@ namespace FighterMaker.Visual.Controls.PropertiesViewChildren
 
             Tag = property;
             PropertyDisplayContent = property.Name;
-            PropertyDisplayText = Property.GetValueAsString(PropertyOwner);            
-        }        
+        }      
+        
+        private void SetCurrentPropertyValue()
+        {
+            PropertyBox.Text = Property.GetValue<string>(PropertyOwner) ?? string.Empty;
+        }
 
         private void PropertyBox_KeyDown(object sender, KeyEventArgs e)
         {
             if (e.Key == Key.Enter || e.Key == Key.Tab) 
             {
-                Property.SetValue(PropertyOwner, PropertyDisplayText);
+                if (string.IsNullOrWhiteSpace(PropertyBox.Text))
+                {
+                    SetCurrentPropertyValue();
+                }
+                else
+                {
+                    Property.SetValue(PropertyOwner, PropertyDisplayText);
+                }
             }
             else if(e.Key == Key.Escape)
             {
-                PropertyBox.Text = Property.GetValueAsString(PropertyOwner);
+                SetCurrentPropertyValue();
             }
         }
 
         private void UserControl_Loaded(object sender, System.Windows.RoutedEventArgs e)
         {
-            var attribute = Property.GetCustomAttributes(typeof(StringLengthAttribute), false);
+            //Valor na label
+            var displayName = Property.SelectAttribute<DisplayNameAttribute>();
 
-            if (attribute != null && attribute.Length > 0)
-            {
-                var max = ((StringLengthAttribute)attribute[0]).MaximumLength;                
-                PropertyBox.MaxLength = max;                
-            }                
+            if (displayName != null)
+                PropertyDisplayContent = displayName.DisplayName;            
+
+            //Tamanho da string na textbox
+            var stringLength = Property.SelectAttribute<StringLengthAttribute>();
+
+            if (stringLength != null && stringLength.MaximumLength > 0)
+                PropertyBox.MaxLength = stringLength.MaximumLength;
+
+            //Descrição a ser exibida em um tooltip
+            var description = Property.SelectAttribute<DescriptionAttribute>();
+
+            if (description != null)
+                ToolTip = description.Description;
+
+            //Valor na textbox
+            PropertyDisplayText = Property.GetValue<string>(PropertyOwner) ?? string.Empty;
         }
     }
 }

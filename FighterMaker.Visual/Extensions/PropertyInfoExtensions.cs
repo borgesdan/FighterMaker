@@ -1,5 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel;
+using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Reflection;
 using System.Text;
@@ -9,14 +11,22 @@ namespace FighterMaker.Visual.Extensions
 {
     public static class PropertyInfoExtensions
     {
-        public static string GetValueAsString(this PropertyInfo property, object owner)
+        public static T? GetValue<T>(this PropertyInfo property, object owner)
         {
             var value = property.GetValue(owner);
 
-            if (value != null && value is string)
-                return (string)value;
+            if(value != null && value is T) 
+                return (T)value;
 
-            return string.Empty;
+            return default(T);
+        }
+
+        public static T? SelectAttribute<T>(this PropertyInfo property) where T : Attribute
+        {
+            var attributes = property.GetCustomAttributes(typeof(T), false);
+            var attr = attributes.FirstOrDefault();
+
+            return attr as T;
         }
     }
 }
