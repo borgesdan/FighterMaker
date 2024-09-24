@@ -20,7 +20,7 @@
                                        AddAnimationButtonClick="AnimationSequence_AddAnimationButtonClick"/>
         <DockPanel Grid.Row="1">
             <Expander ExpandDirection="Right" IsExpanded="False">
-                <Grid Width="200"></Grid>
+                <ctrl:PropertiesViewControl x:Name="PropertiesView" Width="300"></ctrl:PropertiesViewControl>
             </Expander>
             <Canvas Background="CornflowerBlue"></Canvas>
         </DockPanel>

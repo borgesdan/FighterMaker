@@ -35,8 +35,11 @@ namespace FighterMaker.Visual.Pages
             {
                 AnimationSequence.SelectedAnimation = new Models.AnimationModel()
                 {
-                    Name = newAnimationWindow.SelectedAnimationName
+                    Name = newAnimationWindow.SelectedAnimationName                    
                 };
+
+                PropertiesView.CurrentObject = AnimationSequence.SelectedAnimation;
+                PropertiesView.Analize();
             }
         }
     }
