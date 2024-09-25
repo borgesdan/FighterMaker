@@ -23,8 +23,7 @@ namespace FighterMaker.Visual.Controls.PropertiesViewChildren
     /// </summary>
     public partial class PropertyGroupBox : UserControl
     {
-        public PropertyInfo Property { get; protected set; }
-        public object PropertyOwner { get; protected set; }
+        public PropertyInfo? Property { get; protected set; }
 
         public object HeaderDisplay { get => MainGroupBox.Header; set => MainGroupBox.Header = value; }
         public UIElementCollection Children { get => MainGrouBoxStack.Children; }
@@ -34,10 +33,9 @@ namespace FighterMaker.Visual.Controls.PropertiesViewChildren
             InitializeComponent();
         }
 
-        public PropertyGroupBox(object owner, PropertyInfo property) : this() 
+        public PropertyGroupBox(PropertyInfo property) : this() 
         {
             Property = property;
-            PropertyOwner = owner;
 
             Tag = property;
             HeaderDisplay = property.Name;
@@ -45,11 +43,14 @@ namespace FighterMaker.Visual.Controls.PropertiesViewChildren
 
         private void UserControl_Loaded(object sender, RoutedEventArgs e)
         {
-            //Valor na label
+            if (Property == null)
+                throw new NullReferenceException();
+
+            //Nome da sessão ser adicionado no Header
             var displayName = Property.SelectAttribute<DisplayNameAttribute>();
 
             if (displayName != null)
-                HeaderDisplay = displayName;
+                HeaderDisplay = displayName.DisplayName;
         }
     }
 }

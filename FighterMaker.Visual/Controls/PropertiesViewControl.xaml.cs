@@ -1,8 +1,11 @@
 ﻿using FighterMaker.Visual.Controls.PropertiesViewChildren;
+using FighterMaker.Visual.Core.Attributes;
+using FighterMaker.Visual.Core.Extensions;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
+using System.DirectoryServices.ActiveDirectory;
 using System.Linq;
 using System.Reflection;
 using System.Runtime.Versioning;
@@ -17,6 +20,7 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
+using System.Xml.Linq;
 
 namespace FighterMaker.Visual.Controls
 {
@@ -55,35 +59,65 @@ namespace FighterMaker.Visual.Controls
         }    
         
         private void InternalAnalize(object owner, PropertyInfo property, PropertyGroupBox? currentGroupBox)
-        {            
+        {
+            if (!property.CanRead)
+                return;
+
+            var ignoreAttribute = property.SelectAttribute<IgnoreAttribute>();
+
+            if (ignoreAttribute != null)
+                return;
+
+            var analized = AnalizeSupportedType(owner, property, currentGroupBox);
+
+            if (analized)
+                return;
+
+            AnalizeUnsupportedType(owner, property, currentGroupBox);
+        } 
+        
+        private bool AnalizeSupportedType(object owner, PropertyInfo property, PropertyGroupBox? currentGroupBox)
+        {
             var propertyType = property.PropertyType;
 
-            if (PropertiesViewControl.SupportedTypes.Contains(propertyType))
+            if (SupportedTypes.Contains(propertyType))
             {
-                UIElement uIElement = null;
+                UIElement? uIElement = null;
 
                 if (propertyType == typeof(string))
                 {
                     var textBox = new PropertyTextBox(owner, property);
-                    textBox.Height = 28; 
+                    textBox.Height = 28;
                     uIElement = textBox;
                 }
 
                 if (uIElement == null)
                     throw new NullReferenceException();
 
+                if (!property.CanWrite)
+                    uIElement.IsEnabled = false;
+
                 if (currentGroupBox != null)
                     currentGroupBox.Children.Add(uIElement);
                 else
                     MainStack.Children.Add(uIElement);
 
-                return;
+                return true;
             }
 
+            return false;
+        }
+
+        private void AnalizeUnsupportedType(object owner, PropertyInfo property, PropertyGroupBox? currentGroupBox)
+        {
             if (currentGroupBox == null)
             {
-                var groupBox = new PropertyGroupBox(owner, property);
-                
+                var groupBox = new PropertyGroupBox(property);
+                groupBox.Margin = new Thickness(0, 0, 0, 10);
+
+                if (!property.CanWrite)
+                    groupBox.IsEnabled = false;
+
                 MainStack.Children.Add(groupBox);
 
                 var currentOwner = property.GetValue(owner, null);
@@ -94,14 +128,14 @@ namespace FighterMaker.Visual.Controls
                 var type = currentOwner.GetType();
                 var properties = type.GetProperties();
 
-                foreach(var p in properties)
+                foreach (var p in properties)
                 {
-                    if(p == null)
+                    if (p == null)
                         continue;
 
                     InternalAnalize(currentOwner, p, groupBox);
                 }
             }
-        }        
+        }
     }
 }

@@ -1,17 +1,15 @@
-﻿using FighterMaker.Visual.Core.Events;
-using System;
-using System.Collections.Generic;
+﻿using FighterMaker.Visual.Core.Attributes;
+using FighterMaker.Visual.Core.Events;
 using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
-using System.Linq;
 using System.Text;
-using System.Threading.Tasks;
 
 namespace FighterMaker.Visual.Models
 {
     public class AnimationModel
-    {
-        public AnimationModelBasicGroup BasicValues { get; set; } = new();
+    {        
+        [DisplayName("Basic")]
+        public AnimationModelBasic BasicValues { get; set; } = new();        
 
         public override string ToString()
         {
@@ -19,9 +17,9 @@ namespace FighterMaker.Visual.Models
         }
     }
     
-    public class AnimationModelBasicGroup
+    public class AnimationModelBasic
     {
-        private string name;
+        private string name = string.Empty;
 
         [Browsable(true)]
         [StringLength(128)]
@@ -44,6 +42,6 @@ namespace FighterMaker.Visual.Models
             }
         }
 
-        public event EventHandler<StringPropertyChangedEventArgs> NameChanged;
+        public event EventHandler<StringPropertyChangedEventArgs>? NameChanged;
     }
 }

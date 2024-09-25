@@ -4,6 +4,7 @@ using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Reflection;
+using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -27,6 +28,6 @@ namespace FighterMaker.Visual.Core.Extensions
             var attr = attributes.FirstOrDefault();
 
             return attr as T;
-        }
+        }        
     }
 }
