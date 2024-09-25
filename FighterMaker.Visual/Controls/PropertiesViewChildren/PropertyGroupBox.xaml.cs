@@ -23,6 +23,8 @@ namespace FighterMaker.Visual.Controls.PropertiesViewChildren
     /// </summary>
     public partial class PropertyGroupBox : UserControl
     {
+        bool needLayoutUpdate = true;
+
         public PropertyInfo? Property { get; protected set; }
 
         public object HeaderDisplay { get => MainGroupBox.Header; set => MainGroupBox.Header = value; }
@@ -43,14 +45,25 @@ namespace FighterMaker.Visual.Controls.PropertiesViewChildren
 
         private void UserControl_Loaded(object sender, RoutedEventArgs e)
         {
+            if (!needLayoutUpdate)
+                return;            
+
             if (Property == null)
-                throw new NullReferenceException();
+                throw new NullReferenceException();            
 
             //Nome da sessão ser adicionado no Header
             var displayName = Property.SelectAttribute<DisplayNameAttribute>();
 
             if (displayName != null)
                 HeaderDisplay = displayName.DisplayName;
+
+            //Descrição a ser exibida em um tooltip
+            var description = Property.SelectAttribute<DescriptionAttribute>();
+
+            if (description != null)
+                ToolTip = description.Description;
+
+            needLayoutUpdate = false;
         }
     }
 }

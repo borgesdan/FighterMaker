@@ -12,6 +12,8 @@ namespace FighterMaker.Visual.Controls.PropertiesViewChildren
     /// </summary>
     public partial class PropertyTextBox : UserControl
     {
+        bool needLayoutUpdate = true;
+
         public PropertyInfo Property { get; protected set; }
         public object PropertyOwner { get; protected set; }
 
@@ -58,6 +60,12 @@ namespace FighterMaker.Visual.Controls.PropertiesViewChildren
 
         private void UserControl_Loaded(object sender, System.Windows.RoutedEventArgs e)
         {
+            //Valor na textbox
+            PropertyDisplayText = Property.GetValue<string>(PropertyOwner) ?? string.Empty;
+
+            if (!needLayoutUpdate)
+                return;            
+
             //Valor na label
             var displayName = Property.SelectAttribute<DisplayNameAttribute>();
 
@@ -76,8 +84,7 @@ namespace FighterMaker.Visual.Controls.PropertiesViewChildren
             if (description != null)
                 ToolTip = description.Description;
 
-            //Valor na textbox
-            PropertyDisplayText = Property.GetValue<string>(PropertyOwner) ?? string.Empty;
+            needLayoutUpdate = false;
         }
     }
 }

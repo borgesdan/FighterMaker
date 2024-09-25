@@ -9,6 +9,7 @@ namespace FighterMaker.Visual.Models
     public class AnimationModel
     {        
         [DisplayName("Basic")]
+        [Description("Basics informations.")]
         public AnimationModelBasic BasicValues { get; set; } = new();        
 
         public override string ToString()
