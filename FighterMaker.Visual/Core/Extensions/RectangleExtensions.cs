@@ -1,6 +1,6 @@
 ﻿using System.Windows;
 
-namespace FighterMaker.Visual.Extensions
+namespace FighterMaker.Visual.Core.Extensions
 {
     public static class RectangleExtensions
     {
@@ -15,7 +15,7 @@ namespace FighterMaker.Visual.Extensions
             return rect;
         }
 
-        public static System.Drawing.Rectangle ToSystemDrawinRectangle(this Int32Rect rect) 
+        public static System.Drawing.Rectangle ToSystemDrawinRectangle(this Int32Rect rect)
         {
             System.Drawing.Rectangle rectangle = new System.Drawing.Rectangle();
             rectangle.X = rect.X;

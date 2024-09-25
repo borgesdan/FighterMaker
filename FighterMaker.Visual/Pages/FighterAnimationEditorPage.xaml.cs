@@ -1,4 +1,5 @@
-﻿using FighterMaker.Visual.Windows;
+﻿using FighterMaker.Visual.Models;
+using FighterMaker.Visual.Windows;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -33,10 +34,9 @@ namespace FighterMaker.Visual.Pages
 
             if (dialogResult.HasValue && dialogResult.Value == true)
             {
-                AnimationSequence.SelectedAnimation = new Models.AnimationModel()
-                {
-                    Name = newAnimationWindow.SelectedAnimationName                    
-                };
+                var animationModel = new AnimationModel();
+                animationModel.BasicValues.Name = newAnimationWindow.SelectedAnimationName;
+                AnimationSequence.SelectedAnimation = animationModel;
 
                 PropertiesView.CurrentObject = AnimationSequence.SelectedAnimation;
                 PropertiesView.Analize();

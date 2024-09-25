@@ -11,14 +11,24 @@ namespace FighterMaker.Visual.Models
 {
     public class AnimationModel
     {
+        public AnimationModelBasicGroup BasicValues { get; set; } = new();
+
+        public override string ToString()
+        {
+            return BasicValues.Name;
+        }
+    }
+    
+    public class AnimationModelBasicGroup
+    {
         private string name;
 
         [Browsable(true)]
         [StringLength(128)]
         [DisplayName("Name")]
         [Description("The name of the animation.")]
-        public string Name 
-        { 
+        public string Name
+        {
             get => name;
             set
             {
@@ -35,12 +45,5 @@ namespace FighterMaker.Visual.Models
         }
 
         public event EventHandler<StringPropertyChangedEventArgs> NameChanged;
-
-        public override string ToString()
-        {
-            return Name;
-        }
     }
-
-    
 }

@@ -2,7 +2,7 @@
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 
-namespace FighterMaker.Visual.Helpers
+namespace FighterMaker.Visual.Core.Helpers
 {
     public static class BitmapHelper
     {

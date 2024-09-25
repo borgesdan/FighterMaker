@@ -1,7 +1,7 @@
 ﻿using DPoint = System.Drawing.Point;
 using WPoint = System.Windows.Point;
 
-namespace FighterMaker.Visual.Extensions
+namespace FighterMaker.Visual.Core.Extensions
 {
     public static class PointExtensions
     {
@@ -14,7 +14,7 @@ namespace FighterMaker.Visual.Extensions
             return p;
         }
 
-        public static WPoint ToSystemWindowsPoint(this DPoint point) 
+        public static WPoint ToSystemWindowsPoint(this DPoint point)
         {
             WPoint p = new WPoint();
             p.X = point.X;

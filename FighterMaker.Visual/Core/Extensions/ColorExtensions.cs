@@ -1,6 +1,6 @@
 ﻿using System.Windows.Media;
 
-namespace FighterMaker.Visual.Extensions
+namespace FighterMaker.Visual.Core.Extensions
 {
     public static class ColorExtensions
     {

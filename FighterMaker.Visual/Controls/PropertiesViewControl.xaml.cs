@@ -4,6 +4,8 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
+using System.Reflection;
+using System.Runtime.Versioning;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
@@ -23,6 +25,11 @@ namespace FighterMaker.Visual.Controls
     /// </summary>
     public partial class PropertiesViewControl : UserControl
     {
+        private static readonly Type[] SupportedTypes =
+        [
+            typeof(string),
+        ];
+        
         public object CurrentObject { get; set; } = null;
 
         public PropertiesViewControl()
@@ -38,19 +45,61 @@ namespace FighterMaker.Visual.Controls
             var type = CurrentObject.GetType();
             var properties = type.GetProperties();
 
-            foreach (var property in properties)
+            foreach (var property in properties) 
             {
-                var browsable = property.GetCustomAttributes(typeof(BrowsableAttribute), false);
+                if(property == null)
+                    continue;
 
-                if (browsable == null)
+                InternalAnalize(CurrentObject, property, null);
+            }
+        }    
+        
+        private void InternalAnalize(object owner, PropertyInfo property, PropertyGroupBox? currentGroupBox)
+        {            
+            var propertyType = property.PropertyType;
+
+            if (PropertiesViewControl.SupportedTypes.Contains(propertyType))
+            {
+                UIElement uIElement = null;
+
+                if (propertyType == typeof(string))
+                {
+                    var textBox = new PropertyTextBox(owner, property);
+                    textBox.Height = 28; 
+                    uIElement = textBox;
+                }
+
+                if (uIElement == null)
+                    throw new NullReferenceException();
+
+                if (currentGroupBox != null)
+                    currentGroupBox.Children.Add(uIElement);
+                else
+                    MainStack.Children.Add(uIElement);
+
+                return;
+            }
+
+            if (currentGroupBox == null)
+            {
+                var groupBox = new PropertyGroupBox(owner, property);
+                
+                MainStack.Children.Add(groupBox);
+
+                var currentOwner = property.GetValue(owner, null);
+
+                if (currentOwner == null)
                     return;
 
-                if (property.PropertyType == typeof(string))
-                {   
-                    var textBox = new PropertyTextBox(CurrentObject, property);                    
-                    textBox.Height = 28;
-                    
-                    MainStack.Children.Add(textBox);
+                var type = currentOwner.GetType();
+                var properties = type.GetProperties();
+
+                foreach(var p in properties)
+                {
+                    if(p == null)
+                        continue;
+
+                    InternalAnalize(currentOwner, p, groupBox);
                 }
             }
         }        

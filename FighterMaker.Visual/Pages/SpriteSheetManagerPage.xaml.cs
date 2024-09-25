@@ -15,10 +15,10 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
-using FighterMaker.Visual.Extensions;
 using System.Numerics;
 using FighterMaker.Visual.Core;
-using FighterMaker.Visual.Helpers;
+using FighterMaker.Visual.Core.Helpers;
+using FighterMaker.Visual.Core.Extensions;
 
 namespace FighterMaker.Visual.Pages
 {

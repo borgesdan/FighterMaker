@@ -6,7 +6,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Controls;
 
-namespace FighterMaker.Visual.Extensions
+namespace FighterMaker.Visual.Core.Extensions
 {
     public static class ImageControlExtensions
     {

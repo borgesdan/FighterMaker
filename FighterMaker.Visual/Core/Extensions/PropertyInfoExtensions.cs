@@ -7,7 +7,7 @@ using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace FighterMaker.Visual.Extensions
+namespace FighterMaker.Visual.Core.Extensions
 {
     public static class PropertyInfoExtensions
     {
@@ -15,10 +15,10 @@ namespace FighterMaker.Visual.Extensions
         {
             var value = property.GetValue(owner);
 
-            if(value != null && value is T) 
+            if (value != null && value is T)
                 return (T)value;
 
-            return default(T);
+            return default;
         }
 
         public static T? SelectAttribute<T>(this PropertyInfo property) where T : Attribute
