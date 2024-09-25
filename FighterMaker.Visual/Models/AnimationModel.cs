@@ -7,42 +7,67 @@ using System.Text;
 namespace FighterMaker.Visual.Models
 {
     public class AnimationModel
-    {        
+    {
         [DisplayName("Basic")]
         [Description("Basics informations.")]
-        public AnimationModelBasic BasicValues { get; set; } = new();        
+        public AnimationModelBasic BasicValues { get; set; } = new();
 
         public override string ToString()
         {
             return BasicValues.Name;
         }
     }
-    
+
     public class AnimationModelBasic
     {
         private string name = string.Empty;
+        private double defaultFrameDuration = 0.15;
 
-        [Browsable(true)]
-        [StringLength(128)]
-        [DisplayName("Name")]
+        /// <summary>
+        /// Obtém ou define o nome da animação.
+        /// </summary>
+        [StringLength(128)]        
         [Description("The name of the animation.")]
         public string Name
         {
             get => name;
             set
             {
-                var args = new StringPropertyChangedEventArgs()
+                var args = new ValuePropertyChangedEventArgs<string>()
                 {
                     Current = name,
-                    Value = new StringBuilder(value)
+                    Value = value
                 };
 
                 NameChanged?.Invoke(this, args);
 
-                name = args.Value.ToString();
+                name = args.Value;
             }
         }
 
-        public event EventHandler<StringPropertyChangedEventArgs>? NameChanged;
+        /// <summary>
+        /// Obtém ou define padrão de cada quadro da animação.
+        /// </summary>
+        [DisplayName("Frame Duration")]
+        [Description("The default time of each frame of the animation in milliseconds.")]
+        public double DefaultFrameDuration
+        {
+            get => defaultFrameDuration;
+            set
+            {
+                var args = new ValuePropertyChangedEventArgs<double>()
+                {
+                    Current = defaultFrameDuration,
+                    Value = value
+                };
+
+                DefaultFrameDurationChanged?.Invoke(this, args);
+
+                defaultFrameDuration = args.Value;
+            }
+        }
+
+        public event EventHandler<ValuePropertyChangedEventArgs<string>>? NameChanged;
+        public event EventHandler<ValuePropertyChangedEventArgs<double>>? DefaultFrameDurationChanged;
     }
 }

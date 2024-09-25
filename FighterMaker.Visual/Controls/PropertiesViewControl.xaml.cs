@@ -32,6 +32,7 @@ namespace FighterMaker.Visual.Controls
         private static readonly Type[] SupportedTypes =
         [
             typeof(string),
+            typeof(double),
         ];
         
         public object CurrentObject { get; set; } = null;
@@ -87,6 +88,12 @@ namespace FighterMaker.Visual.Controls
                 if (propertyType == typeof(string))
                 {
                     var textBox = new PropertyTextBox(owner, property);
+                    textBox.Height = 28;
+                    uIElement = textBox;
+                }
+                else if(propertyType == typeof(double))
+                {
+                    var textBox = new PropertyDoubleBox(owner, property);
                     textBox.Height = 28;
                     uIElement = textBox;
                 }
