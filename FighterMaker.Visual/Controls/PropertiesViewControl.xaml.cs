@@ -44,20 +44,25 @@ namespace FighterMaker.Visual.Controls
 
         public void Analize()
         {
-            if (CurrentObject == null)
+            InternalAnalizeObjectProperties(CurrentObject, null);
+        }    
+
+        private void InternalAnalizeObjectProperties(object obj, PropertyGroupBox? currentGroupBox)
+        {
+            if (obj == null)
                 return;
 
-            var type = CurrentObject.GetType();
+            var type = obj.GetType();
             var properties = type.GetProperties();
 
-            foreach (var property in properties) 
+            foreach (var property in properties)
             {
-                if(property == null)
+                if (property == null)
                     continue;
 
-                InternalAnalize(CurrentObject, property, null);
+                InternalAnalize(obj, property, currentGroupBox);
             }
-        }    
+        }
         
         private void InternalAnalize(object owner, PropertyInfo property, PropertyGroupBox? currentGroupBox)
         {
@@ -132,16 +137,7 @@ namespace FighterMaker.Visual.Controls
                 if (currentOwner == null)
                     return;
 
-                var type = currentOwner.GetType();
-                var properties = type.GetProperties();
-
-                foreach (var p in properties)
-                {
-                    if (p == null)
-                        continue;
-
-                    InternalAnalize(currentOwner, p, groupBox);
-                }
+                InternalAnalizeObjectProperties(currentOwner, groupBox);
             }
         }
     }
