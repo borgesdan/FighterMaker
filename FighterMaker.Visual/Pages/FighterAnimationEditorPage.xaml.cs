@@ -1,4 +1,5 @@
-﻿using FighterMaker.Visual.Models;
+﻿using FighterMaker.Visual.Controls;
+using FighterMaker.Visual.Models;
 using FighterMaker.Visual.Windows;
 using System;
 using System.Collections.Generic;
@@ -22,6 +23,8 @@ namespace FighterMaker.Visual.Pages
     /// </summary>
     public partial class FighterAnimationEditorPage : Page
     {
+        private Dictionary<AnimationModel, PropertiesViewControl> propertiesViewControlsMap = [];
+
         public FighterAnimationEditorPage()
         {
             InitializeComponent();
@@ -37,10 +40,32 @@ namespace FighterMaker.Visual.Pages
                 var animationModel = new AnimationModel();
                 animationModel.BasicValues.Name = newAnimationWindow.SelectedAnimationName;
                 AnimationSequence.SelectedAnimation = animationModel;
+                AnimationSequence.NameBoxSelectionChanged += AnimationSequence_NameBoxSelectionChanged;
 
-                PropertiesView.CurrentObject = AnimationSequence.SelectedAnimation;
-                PropertiesView.Analize();
+                var propertiesView = new PropertiesViewControl();
+                propertiesView.Width = 400;
+                propertiesView.CurrentObject = animationModel;
+                propertiesView.Analize();
+
+                propertiesViewControlsMap.Add(animationModel, propertiesView);
+
+                MainExpander.Content = propertiesView;
             }
+        }
+
+        private void AnimationSequence_NameBoxSelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            var selectedAnimation = AnimationSequence.SelectedAnimation;
+
+            if (selectedAnimation == null)
+                return;
+
+            PropertiesViewControl? propertiesViewControl;
+
+            propertiesViewControlsMap.TryGetValue(selectedAnimation, out propertiesViewControl);
+
+            if(propertiesViewControl != null)
+                MainExpander.Content = propertiesViewControl;
         }
     }
 }

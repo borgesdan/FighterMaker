@@ -20,7 +20,10 @@
                   Grid.Column="1"
                   Margin="5"
                   Background="White"
-                  VerticalContentAlignment="Center">            
+                  VerticalContentAlignment="Center"
+                  SelectionChanged="NameBox_SelectionChanged">            
         </ComboBox>
+        <StackPanel x:Name="FrameStack"
+                    Grid.Column="2" />
     </Grid>
 </UserControl>

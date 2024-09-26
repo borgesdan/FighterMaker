@@ -12,6 +12,9 @@ namespace FighterMaker.Visual.Models
         [Description("Basics informations.")]
         public AnimationModelBasic BasicValues { get; set; } = new();
 
+        [Ignore]
+        public List<AnimationFrameModel> Frames { get; set; } = [];        
+
         public override string ToString()
         {
             return BasicValues.Name;
@@ -40,8 +43,8 @@ namespace FighterMaker.Visual.Models
                 };
 
                 NameChanged?.Invoke(this, args);
-
                 name = args.Value;
+                EndNameChanged?.Invoke(this, name);
             }
         }
 
@@ -62,12 +65,14 @@ namespace FighterMaker.Visual.Models
                 };
 
                 DefaultFrameDurationChanged?.Invoke(this, args);
-
                 defaultFrameDuration = args.Value;
+                EndDefaultFrameDurationChanged?.Invoke(this, defaultFrameDuration);
             }
         }
 
         public event EventHandler<ValuePropertyChangedEventArgs<string>>? NameChanged;
+        public event EventHandler<string>? EndNameChanged;
         public event EventHandler<ValuePropertyChangedEventArgs<double>>? DefaultFrameDurationChanged;
+        public event EventHandler<double>? EndDefaultFrameDurationChanged;
     }
 }

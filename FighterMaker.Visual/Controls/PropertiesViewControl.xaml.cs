@@ -122,6 +122,11 @@ namespace FighterMaker.Visual.Controls
 
         private void AnalizeUnsupportedType(object owner, PropertyInfo property, PropertyGroupBox? currentGroupBox)
         {
+            var propType = property.PropertyType;
+
+            if (propType.IsArray || propType.IsCollectible)
+                return;
+
             if (currentGroupBox == null)
             {
                 var groupBox = new PropertyGroupBox(property);

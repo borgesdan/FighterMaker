@@ -17,30 +17,41 @@ using System.Windows.Shapes;
 namespace FighterMaker.Visual.Controls
 {
     /// <summary>
-    /// Interaction logic for AnimationSequenceControl.xaml
+    /// Represents a control that displays an animation selection and its frames
     /// </summary>
     public partial class AnimationSequenceControl : UserControl
     {
-
-        private AnimationModel animationModel;
-        public AnimationModel SelectedAnimation 
-        { 
-            get => animationModel;
+        /// <summary>
+        /// Gets or sets the selected animation.
+        /// </summary>
+        public AnimationModel? SelectedAnimation 
+        {
+            get
+            {
+                var selected = NameBox.SelectedItem as ComboBoxItem;
+                return selected?.Content as AnimationModel;
+            }
             set
             {
-                animationModel = value;
-                
-                var item = new ComboBoxItem();
-                item.Content = animationModel;
-                item.IsSelected = true;
+                if (value == null)
+                    return;
+
+                var item = new ComboBoxItem
+                {
+                    Content = value,
+                    IsSelected = true
+                };
+
+                value.BasicValues.EndNameChanged += AnimationModel_EndNameChanged;
 
                 NameBox.Items.Add(item);
             } 
-        }        
+        }
 
-        public object SelectedNameBoxItem { get => NameBox.SelectedItem; }
-        
-        public event RoutedEventHandler AddAnimationButtonClick;
+        /// <summary>Event to be executed when the add animation button was clicked.</summary>
+        public event RoutedEventHandler? AddAnimationButtonClick;
+        /// <summary>Event to be executed the selected animation is changed</summary>
+        public event SelectionChangedEventHandler? NameBoxSelectionChanged;
 
         public AnimationSequenceControl()
         {            
@@ -50,6 +61,21 @@ namespace FighterMaker.Visual.Controls
         private void AddAnimationButton_Click(object sender, RoutedEventArgs e)
         {
             AddAnimationButtonClick?.Invoke(sender, e);
+        }
+
+        private void NameBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            NameBoxSelectionChanged?.Invoke(sender, e);
+        }
+
+        //Forces the control to update if the animation name changes
+        private void AnimationModel_EndNameChanged(object? sender, string e)
+        {
+            this.UpdateLayout();
+
+            var selected = NameBox.SelectedItem;
+            NameBox.SelectedItem = null;
+            NameBox.SelectedItem = selected;
         }
     }
 }
