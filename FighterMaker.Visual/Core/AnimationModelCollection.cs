@@ -1,34 +1,34 @@
-﻿using FighterMaker.Visual.Models;
-using System;
+﻿using FighterMaker.Visual.Core.Events;
+using FighterMaker.Visual.Models;
 using System.Collections;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows.Controls;
 
 namespace FighterMaker.Visual.Core
 {
+    /// <summary>
+    /// Represents a collection of animations.
+    /// </summary>
     public class AnimationModelCollection : ICollection<AnimationModel>
     {
-        List<AnimationModel> items = [];
+        readonly List<AnimationModel> items = [];
 
         public AnimationModelCollection()
         {
-        }
-
-        void AnimationModel_NameChanged(object? sender, Core.Events.ValuePropertyChangedEventArgs<string> e)
-        {
-            var any = items.Any(x => x.BasicValues.Name == e.Value);
-            e.Accepted = !any;
         }        
 
         public int Count => items.Count;
 
         public bool IsReadOnly => false;
 
+        /// <summary>
+        /// Add a new item to the collection.
+        /// </summary>
+        /// <param name="animationName"></param>
+        /// <exception cref="InvalidOperationException">Throws if an animation with that name already exists.</exception>
+        /// <returns>Returns the created animation.</returns>
         public AnimationModel Add(string animationName)
         {
+            ThrowIfHasAnimation(animationName);
+
             var animationModel = new AnimationModel();
             animationModel.BasicValues.NameChanged += AnimationModel_NameChanged;
             animationModel.BasicValues.Name = animationName;            
@@ -38,13 +38,8 @@ namespace FighterMaker.Visual.Core
         }
 
         public void Add(AnimationModel item)
-        {
-            var any = items.Any(x => x.BasicValues.Name == item.BasicValues.Name);
-
-            if (any)
-            {
-                throw new InvalidOperationException();
-            }
+        {            
+            ThrowIfHasAnimation(item.BasicValues.Name);
 
             item.BasicValues.NameChanged += AnimationModel_NameChanged;
             items.Add(item);
@@ -78,6 +73,22 @@ namespace FighterMaker.Visual.Core
         IEnumerator IEnumerable.GetEnumerator()
         {
             return items.GetEnumerator();
+        }
+
+        void AnimationModel_NameChanged(object? sender, ValuePropertyChangedEventArgs<string> e)
+        {
+            var any = items.Any(x => x.BasicValues.Name == e.Value);
+            e.Accepted = !any;
+        }
+
+        void ThrowIfHasAnimation(string animationName)
+        {
+            var any = items.Any(x => x.BasicValues.Name == animationName);
+
+            if (any)
+            {
+                throw new InvalidOperationException();
+            }
         }
     }
 }
