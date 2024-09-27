@@ -1,9 +1,13 @@
-﻿using FighterMaker.Visual.Core.Extensions;
+﻿using FighterMaker.Visual.Core;
+using FighterMaker.Visual.Core.Extensions;
 using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
 using System.Reflection;
+using System.Resources;
+using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
+using System.Resources;
 
 namespace FighterMaker.Visual.Controls.PropertiesViewChildren
 {
@@ -43,14 +47,19 @@ namespace FighterMaker.Visual.Controls.PropertiesViewChildren
         {
             if (e.Key == Key.Enter || e.Key == Key.Tab) 
             {
-                if (string.IsNullOrWhiteSpace(PropertyBox.Text))
-                {
-                    SetCurrentPropertyValue();
-                }
-                else
+                if (!string.IsNullOrWhiteSpace(PropertyBox.Text))
                 {
                     Property.SetValue(PropertyOwner, PropertyDisplayText);
+
+                    var value = Property.GetValue<string>(PropertyOwner);
+                    
+                    if (!PropertyDisplayText.Equals(value))
+                    {                        
+                        MessageBox.Show("There is already an animation with the given name.");
+                    }
                 }
+
+                SetCurrentPropertyValue();
             }
             else if(e.Key == Key.Escape)
             {

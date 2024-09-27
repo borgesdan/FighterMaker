@@ -1,6 +1,7 @@
 ﻿using FighterMaker.Visual.Core.Events;
 using FighterMaker.Visual.Models;
 using System.Collections;
+using System.IO;
 
 namespace FighterMaker.Visual.Core
 {
@@ -87,7 +88,7 @@ namespace FighterMaker.Visual.Core
 
             if (any)
             {
-                throw new InvalidOperationException();
+                throw new InvalidOperationException("There is already an animation with the given name.");
             }
         }
     }
