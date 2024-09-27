@@ -39,11 +39,15 @@ namespace FighterMaker.Visual.Models
                 var args = new ValuePropertyChangedEventArgs<string>()
                 {
                     Current = name,
-                    Value = value
+                    Value = value,
+                    Accepted = true,                    
                 };
 
                 NameChanged?.Invoke(this, args);
-                name = args.Value;
+
+                if(args.Accepted)
+                    name = args.Value;
+
                 EndNameChanged?.Invoke(this, name);
             }
         }
@@ -61,11 +65,15 @@ namespace FighterMaker.Visual.Models
                 var args = new ValuePropertyChangedEventArgs<double>()
                 {
                     Current = defaultFrameDuration,
-                    Value = value
+                    Value = value,
+                    Accepted = true,
                 };
 
                 DefaultFrameDurationChanged?.Invoke(this, args);
-                defaultFrameDuration = args.Value;
+
+                if(args.Accepted)
+                    defaultFrameDuration = args.Value;
+
                 EndDefaultFrameDurationChanged?.Invoke(this, defaultFrameDuration);
             }
         }

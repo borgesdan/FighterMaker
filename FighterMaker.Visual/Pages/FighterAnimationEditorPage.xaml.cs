@@ -23,6 +23,8 @@ namespace FighterMaker.Visual.Pages
     /// </summary>
     public partial class FighterAnimationEditorPage : Page
     {
+        List<AnimationModel> animations = [];
+
         private Dictionary<AnimationModel, PropertiesViewControl> propertiesViewControlsMap = [];
 
         public FighterAnimationEditorPage()
@@ -37,17 +39,8 @@ namespace FighterMaker.Visual.Pages
 
             if (dialogResult.HasValue && dialogResult.Value == true)
             {
-                var animationModel = new AnimationModel();
-                animationModel.BasicValues.Name = newAnimationWindow.SelectedAnimationName;
-                AnimationSequence.SelectedAnimation = animationModel;
-                AnimationSequence.NameBoxSelectionChanged += AnimationSequence_NameBoxSelectionChanged;
-
-                var propertiesView = new PropertiesViewControl();
-                propertiesView.Width = 400;
-                propertiesView.CurrentObject = animationModel;
-                propertiesView.Analize();
-
-                propertiesViewControlsMap.Add(animationModel, propertiesView);
+                var animationModel = AddAnimation(newAnimationWindow.SelectedAnimationName);
+                var propertiesView = AddPropertiesView(animationModel);
 
                 MainExpander.Content = propertiesView;
             }
@@ -58,14 +51,53 @@ namespace FighterMaker.Visual.Pages
             var selectedAnimation = AnimationSequence.SelectedAnimation;
 
             if (selectedAnimation == null)
-                return;
+                return;            
 
-            PropertiesViewControl? propertiesViewControl;
-
-            propertiesViewControlsMap.TryGetValue(selectedAnimation, out propertiesViewControl);
+            propertiesViewControlsMap.TryGetValue(selectedAnimation, out PropertiesViewControl? propertiesViewControl);
 
             if(propertiesViewControl != null)
                 MainExpander.Content = propertiesViewControl;
+        }
+
+        private AnimationModel AddAnimation(string animationName)
+        {
+            var animationModel = new AnimationModel();
+            animationModel.BasicValues.NameChanged += BasicValues_NameChanged;
+            animationModel.BasicValues.Name = animationName;
+            AnimationSequence.SelectedAnimation = animationModel;
+            AnimationSequence.NameBoxSelectionChanged += AnimationSequence_NameBoxSelectionChanged;
+
+            animations.Add(animationModel);
+
+            return animationModel;
+        }
+
+        private void BasicValues_NameChanged(object? sender, Core.Events.ValuePropertyChangedEventArgs<string> e)
+        {
+            if (HasAnimation(e.Value))
+            {
+                MessageBox.Show("There is already an animation with the given name.");
+                return;
+            }
+        }
+
+        private PropertiesViewControl AddPropertiesView(AnimationModel animationModel)
+        {
+            var propertiesView = new PropertiesViewControl
+            {
+                Width = 400,
+                CurrentObject = animationModel
+            };
+
+            propertiesView.Analize();
+            propertiesViewControlsMap.Add(animationModel, propertiesView);
+
+            return propertiesView;
+        }
+
+        private bool HasAnimation(string? animationName)
+        {
+            return animations.Any(x => x.BasicValues.Name == animationName);
         }
     }
 }

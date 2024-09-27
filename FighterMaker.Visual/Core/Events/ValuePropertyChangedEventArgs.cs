@@ -10,5 +10,6 @@ namespace FighterMaker.Visual.Core.Events
     {
         public T? Current { get; set; }
         public T? Value { get; set; }
+        public bool Accepted { get; set; }
     }
 }
