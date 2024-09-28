@@ -38,11 +38,13 @@ namespace FighterMaker.Visual.Pages
         BitmapSourceSlice? selectedBitmapSourceSlice;
         CroppedBitmap? selectedCroppedBitmapSouce;
 
-        //Flag para previnir a exibição e redimensionamento do retângulo de seleção após abrir arquivo com dois cliques
+        //Flag to prevent displaying and resizing selection rectangle
+        //after double-clicking file open
         bool preventResizeRectangle = false;
 
         public event EventHandler<SpriteSheetEventArgs>? InsertAfterFrameButtonClick;
         public event EventHandler<SpriteSheetEventArgs>? InsertBeforeFrameButtonClick;
+        public event EventHandler<SpriteSheetEventArgs>? ReplaceFrameButtonClick;
 
         public SpriteSheetManagerPage()
         {
@@ -148,6 +150,12 @@ namespace FighterMaker.Visual.Pages
         {
             var args = new SpriteSheetEventArgs(selectedBitmapSourceSlice);
             InsertBeforeFrameButtonClick?.Invoke(sender, args);
+        }
+
+        private void ReplaceFrameButton_Click(object sender, RoutedEventArgs e)
+        {
+            var args = new SpriteSheetEventArgs(selectedBitmapSourceSlice);
+            ReplaceFrameButtonClick?.Invoke(sender, args);
         }
 
         private void AdjustRectangle()

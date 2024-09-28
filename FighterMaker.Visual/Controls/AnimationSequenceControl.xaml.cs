@@ -1,4 +1,5 @@
-﻿using FighterMaker.Visual.Core.Events;
+﻿using FighterMaker.Visual.Core;
+using FighterMaker.Visual.Core.Events;
 using FighterMaker.Visual.Models;
 using FighterMaker.Visual.Pages;
 using System;
@@ -15,6 +16,7 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
+using FighterMaker.Visual.Core.Extensions;
 
 namespace FighterMaker.Visual.Controls
 {
@@ -98,16 +100,28 @@ namespace FighterMaker.Visual.Controls
 
             sheetManagerPage.InsertAfterFrameButtonClick += SheetManagerPage_InsertAfterFrameButtonClick;
             sheetManagerPage.InsertBeforeFrameButtonClick += SheetManagerPage_InsertBeforeFrameButtonClick;
+            sheetManagerPage.ReplaceFrameButtonClick += SheetManagerPage_ReplaceFrameButtonClick;
             window.Content = frame;
             window.WindowStartupLocation = WindowStartupLocation.CenterOwner;
             window.Owner = App.Current.MainWindow;
 
             window.Show();
-        }
+        }        
 
         private void SheetManagerPage_InsertBeforeFrameButtonClick(object? sender, SpriteSheetEventArgs e)
         {
-            InsertFrame(e, true);
+            var insertedFrame = InsertFrame(e, true);
+
+            //if (insertedFrame == null || insertedFrame.BitmapSlice == null)
+            //    return;
+
+            //var frameModel = new AnimationFrameModel
+            //{
+            //    SourceTexture = insertedFrame.BitmapSlice.Source,
+            //    Bounds = insertedFrame.BitmapSlice.SourceRectangle
+            //};
+
+            //SelectedAnimation?.Frames.Insert(insertedFrame.Index, frameModel);
         }
 
         private void SheetManagerPage_InsertAfterFrameButtonClick(object? sender, SpriteSheetEventArgs e)
@@ -115,7 +129,18 @@ namespace FighterMaker.Visual.Controls
             InsertFrame(e);
         }
 
-        private Rectangle? InsertFrame(SpriteSheetEventArgs e, bool before = false)
+        private void SheetManagerPage_ReplaceFrameButtonClick(object? sender, SpriteSheetEventArgs e)
+        {
+            ReplaceFrame(e);
+        }
+
+        private void FrameListView_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            var selectedItem = FrameListView.SelectedItem as Rectangle;
+            FrameSelectionChanged?.Invoke(sender, selectedItem);
+        }
+
+        private SelectedFrame? InsertFrame(SpriteSheetEventArgs e, bool before = false)
         {
             if (e.FrameSource == null)
                 return null;
@@ -148,13 +173,48 @@ namespace FighterMaker.Visual.Controls
 
             FrameListView.SelectedIndex = objIndex;
 
-            return rectangle;
+            var insertedFrame = new SelectedFrame
+            {
+                Index = objIndex,
+                BitmapSlice = e.FrameSource,
+            };
+
+            return insertedFrame;
         }
 
-        private void FrameListView_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        private SelectedFrame? ReplaceFrame(SpriteSheetEventArgs e)
         {
+            if (e.FrameSource == null)
+                return null;
+
+            if (NameBox.SelectedItem == null)
+                return null;
+
+            var currentSelectedIndex = FrameListView.SelectedIndex;
+
+            if(currentSelectedIndex < 0)
+            {
+                return InsertFrame(e);                
+            }
+
             var selectedItem = FrameListView.SelectedItem as Rectangle;
-            FrameSelectionChanged?.Invoke(sender, selectedItem);
+
+            if (selectedItem != null)
+                selectedItem.Fill = Brushes.Orange;            
+
+            var replacedFrame = new SelectedFrame
+            {
+                Index = currentSelectedIndex,
+                BitmapSlice = e.FrameSource,
+            };
+
+            return replacedFrame;
         }
+    }
+
+    public class SelectedFrame
+    {
+        public int Index { get; set; }
+        public BitmapSourceSlice? BitmapSlice { get; set; }
     }
 }

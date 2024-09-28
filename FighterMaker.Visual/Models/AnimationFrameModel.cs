@@ -15,12 +15,12 @@ namespace FighterMaker.Visual.Models
         /// <summary>
         /// Obtém ou define o nome do arquivo associado a textura.
         /// </summary>
-        public string BitmapFileName { get; set; }
+        public string? BitmapFileName { get; set; }
 
         /// <summary>
         /// Obtém ou define a texture associada a esse quadro de animação.
         /// </summary>
-        public BitmapSource SourceTexture { get; set; } = null;
+        public BitmapSource? SourceTexture { get; set; } = null;
 
         /// <summary>
         /// Obtém ou define os limites do frame.
