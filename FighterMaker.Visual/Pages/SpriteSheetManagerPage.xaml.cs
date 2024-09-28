@@ -19,6 +19,7 @@ using System.Numerics;
 using FighterMaker.Visual.Core;
 using FighterMaker.Visual.Core.Helpers;
 using FighterMaker.Visual.Core.Extensions;
+using FighterMaker.Visual.Core.Events;
 
 namespace FighterMaker.Visual.Pages
 {
@@ -33,31 +34,18 @@ namespace FighterMaker.Visual.Pages
         Vector2 currentImageCanvasOffset;
         MouseButtonState oldLeftButtonState;
 
+        Int32Rect selectedFrameRectangle;
+        BitmapSourceSlice? selectedBitmapSourceSlice;
+
         //Flag para previnir a exibição e redimensionamento do retângulo de seleção após abrir arquivo com dois cliques
         bool preventResizeRectangle = false;
+
+        public event EventHandler<SpriteSheetEventArgs>? InsertAfterFrameButtonClick;
 
         public SpriteSheetManagerPage()
         {
             InitializeComponent();
-        }        
-
-        private void HideFrameRectangle()
-        {
-            CanvasFrameRectangle.Visibility = Visibility.Hidden;
-            CanvasFrameRectangle.Width = 0;
-            CanvasFrameRectangle.Height = 0;
-        }
-
-        private void SetFrameRectanglePosition()
-        {
-            var imageLeftTop = CanvasImage.GetCanvasLeftTopProperties();
-
-            var left = imageLeftTop.Item1 + selectedRectanglePosition.X;
-            var top = imageLeftTop.Item2 + selectedRectanglePosition.Y;
-
-            CanvasFrameRectangle.SetValue(Canvas.LeftProperty, left);
-            CanvasFrameRectangle.SetValue(Canvas.TopProperty, top);
-        }
+        }               
 
         private void OpenFileButton_Click(object sender, RoutedEventArgs e)
         {
@@ -138,32 +126,71 @@ namespace FighterMaker.Visual.Pages
                 oldLeftButtonState = MouseButtonState.Released;
                 AdjustRectangle();
             }
+        }       
+
+        private void InsertAfterFrameButton_Click(object sender, RoutedEventArgs e)
+        {
+            var args = new SpriteSheetEventArgs(selectedFrameRectangle, selectedBitmapSourceSlice);
+
+            InsertAfterFrameButtonClick?.Invoke(sender, args);
         }
 
         private void AdjustRectangle()
-        {            
-            var bitmap = CanvasImage.Source as BitmapSource;
-
-            if (bitmap == null)
+        {
+            if (CanvasImage.Source is not BitmapSource bitmap)
                 return;
 
             Int32Rect rect;
-
             rect.X = (int)selectedRectanglePosition.X;
             rect.Y = (int)selectedRectanglePosition.Y;
             rect.Width = (int)CanvasFrameRectangle.Width;
-            rect.Height = (int)CanvasFrameRectangle.Height;            
+            rect.Height = (int)CanvasFrameRectangle.Height;
 
             var bitmapSourceSlice = new BitmapSourceSlice(bitmap, rect);
             var fittedRect = bitmapSourceSlice.GetFittedRectangle();
 
+            AdjustCanvasFrameRectangleFrom(fittedRect);
+
+            selectedFrameRectangle = fittedRect;
+            selectedBitmapSourceSlice = new BitmapSourceSlice(bitmap, fittedRect);
+        }
+
+        private void AdjustCanvasFrameRectangleFrom(Int32Rect rectangle)
+        {
             var top = (double)CanvasFrameRectangle.GetValue(Canvas.TopProperty);
             var left = (double)CanvasFrameRectangle.GetValue(Canvas.LeftProperty);
-            
-            CanvasFrameRectangle.SetValue(Canvas.LeftProperty, (double)left + fittedRect.X);
-            CanvasFrameRectangle.SetValue(Canvas.TopProperty, (double)top + fittedRect.Y);
-            CanvasFrameRectangle.Width = fittedRect.Width - fittedRect.X;
-            CanvasFrameRectangle.Height = fittedRect.Height - fittedRect.Y;
+
+            SetCanvasFrameRectangle(
+                (double)left + rectangle.X,
+                (double)top + rectangle.Y,
+                rectangle.Width - rectangle.X,
+                rectangle.Height - rectangle.Y);
         }
-    }
+
+        private void SetCanvasFrameRectangle(double x, double y, double width, double height)
+        {
+            CanvasFrameRectangle.SetValue(Canvas.LeftProperty, x);
+            CanvasFrameRectangle.SetValue(Canvas.TopProperty, y);
+            CanvasFrameRectangle.Width = width;
+            CanvasFrameRectangle.Height = height;
+        }
+
+        private void HideFrameRectangle()
+        {
+            CanvasFrameRectangle.Visibility = Visibility.Hidden;
+            CanvasFrameRectangle.Width = 0;
+            CanvasFrameRectangle.Height = 0;
+        }
+
+        private void SetFrameRectanglePosition()
+        {
+            var imageLeftTop = CanvasImage.GetCanvasLeftTopProperties();
+
+            var left = imageLeftTop.Item1 + selectedRectanglePosition.X;
+            var top = imageLeftTop.Item2 + selectedRectanglePosition.Y;
+
+            CanvasFrameRectangle.SetValue(Canvas.LeftProperty, left);
+            CanvasFrameRectangle.SetValue(Canvas.TopProperty, top);
+        }
+    }      
 }

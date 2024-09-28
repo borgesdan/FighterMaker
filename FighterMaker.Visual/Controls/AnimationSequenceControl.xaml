@@ -9,6 +9,7 @@
     <Grid>        
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="64" />
+            <ColumnDefinition Width="64" />
             <ColumnDefinition Width="0.5*" />
             <ColumnDefinition />
         </Grid.ColumnDefinitions>        
@@ -16,14 +17,24 @@
                 Content="+"
                 Margin="5"
                 Click="AddAnimationButton_Click" />
+        <Button x:Name="OpenSpriteSheetButton"
+                Content="S"
+                Grid.Column="1"
+                Margin="5"
+                Click="OpenSpriteSheetButton_Click"/>
         <ComboBox x:Name="NameBox"
-                  Grid.Column="1"
+                  Grid.Column="2"
                   Margin="5"
                   Background="White"
                   VerticalContentAlignment="Center"
                   SelectionChanged="NameBox_SelectionChanged">            
         </ComboBox>
-        <StackPanel x:Name="FrameStack"
-                    Grid.Column="2" />
+        <ListView x:Name="FrameListView" Grid.Column="3">
+            <ListView.ItemsPanel>
+                <ItemsPanelTemplate>
+                    <StackPanel Orientation="Horizontal"></StackPanel>
+                </ItemsPanelTemplate>
+            </ListView.ItemsPanel>            
+        </ListView>
     </Grid>
 </UserControl>

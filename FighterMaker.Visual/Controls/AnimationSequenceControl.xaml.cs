@@ -1,4 +1,6 @@
-﻿using FighterMaker.Visual.Models;
+﻿using FighterMaker.Visual.Core.Events;
+using FighterMaker.Visual.Models;
+using FighterMaker.Visual.Pages;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -76,6 +78,57 @@ namespace FighterMaker.Visual.Controls
             var selected = NameBox.SelectedItem;
             NameBox.SelectedItem = null;
             NameBox.SelectedItem = selected;
+        }
+
+        private void OpenSpriteSheetButton_Click(object sender, RoutedEventArgs e)
+        {
+            var sheetManagerPage = new SpriteSheetManagerPage();
+
+            var frame = new Frame
+            {
+                Content = sheetManagerPage
+            };
+
+            var window = new Window
+            {
+                WindowStyle = WindowStyle.SingleBorderWindow
+            };
+
+            sheetManagerPage.InsertAfterFrameButtonClick += SheetManagerPage_InsertAfterFrameButtonClick;
+            window.Content = frame;            
+
+            window.Show();
+        }
+
+        private void SheetManagerPage_InsertAfterFrameButtonClick(object? sender, SpriteSheetEventArgs e)
+        {
+            if (e.IsEmpty)
+                return;
+
+            if (NameBox.SelectedItem == null)
+                return;
+
+            Rectangle rectangle = new Rectangle();
+            rectangle.Width = 20;
+            rectangle.Height = 20;
+            
+            rectangle.Fill = Brushes.Black;
+
+            int objIndex = -1;
+
+            if(FrameListView.SelectedIndex > -1)
+            {
+                rectangle.Fill = Brushes.Red;
+                FrameListView.Items.Insert(FrameListView.SelectedIndex + 1, rectangle);
+
+                objIndex = FrameListView.SelectedIndex + 1;
+            }
+            else
+            {
+                objIndex = FrameListView.Items.Add(rectangle);
+            }
+            
+            FrameListView.SelectedIndex = objIndex;
         }
     }
 }

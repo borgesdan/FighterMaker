@@ -20,6 +20,7 @@
         </Canvas>
         <Menu Grid.Row="0">
             <Button x:Name="OpenFileButton" Content="O" Height="30" Width="32" Click="OpenFileButton_Click"></Button>
+            <Button x:Name="InsertAfterFrameButton" Content="Ok" Height="30" Width="32" Click="InsertAfterFrameButton_Click" />
         </Menu>
         <Rectangle Grid.Row="2" Fill="AliceBlue" />
     </Grid>
