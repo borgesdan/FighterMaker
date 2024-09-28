@@ -9,6 +9,7 @@ namespace FighterMaker.Visual.Core
     {
         BitmapSource bitmap;
         Int32Rect sourceRectangle;
+        CroppedBitmap cropped;
 
         /// <summary>
         /// Obtém o bitmap de origem.
@@ -19,6 +20,17 @@ namespace FighterMaker.Visual.Core
         /// Obtém a proporção de (bits por pixel / 8) * a largura do retângulo de origem.
         /// </summary>
         public int Stride => sourceRectangle.Width * (bitmap.Format.BitsPerPixel / 8);
+
+        public CroppedBitmap Cropped
+        {
+            get
+            {
+                if (cropped == null)
+                    cropped = new CroppedBitmap(bitmap, sourceRectangle);
+
+                return cropped;
+            }
+        }
 
         /// <summary>
         /// Obtém o retângulo de origem.

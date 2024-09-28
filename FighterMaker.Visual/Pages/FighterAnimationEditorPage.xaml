@@ -17,12 +17,15 @@
         </Grid.RowDefinitions>
         <ctrl:AnimationSequenceControl x:Name="AnimationSequence"
                                        Grid.Row="0"
-                                       AddAnimationButtonClick="AnimationSequence_AddAnimationButtonClick"/>
+                                       AddAnimationButtonClick="AnimationSequence_AddAnimationButtonClick"
+                                       FrameSelectionChanged="AnimationSequence_FrameSelected"/>
         <DockPanel Grid.Row="1">
             <Expander x:Name="MainExpander" ExpandDirection="Right" IsExpanded="False" >                
                 <!-- <ctrl:PropertiesViewControl x:Name="PropertiesView" Width="300"></ctrl:PropertiesViewControl>-->
             </Expander>
-            <Canvas Background="CornflowerBlue"></Canvas>
+            <Canvas x:Name="MainCanvas" Background="CornflowerBlue">
+                <Image x:Name="CanvasImage" />
+            </Canvas>
         </DockPanel>
     </Grid>
 </Page>

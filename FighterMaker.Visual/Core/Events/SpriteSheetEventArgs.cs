@@ -1,4 +1,5 @@
 ﻿using System.Windows;
+using System.Windows.Media.Imaging;
 
 namespace FighterMaker.Visual.Core.Events
 {

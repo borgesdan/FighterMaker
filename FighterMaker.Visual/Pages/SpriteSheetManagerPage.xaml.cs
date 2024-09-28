@@ -36,6 +36,7 @@ namespace FighterMaker.Visual.Pages
 
         Int32Rect selectedFrameRectangle;
         BitmapSourceSlice? selectedBitmapSourceSlice;
+        CroppedBitmap? selectedCroppedBitmapSouce;
 
         //Flag para previnir a exibição e redimensionamento do retângulo de seleção após abrir arquivo com dois cliques
         bool preventResizeRectangle = false;
@@ -161,12 +162,28 @@ namespace FighterMaker.Visual.Pages
             rect.Height = (int)CanvasFrameRectangle.Height;
 
             var bitmapSourceSlice = new BitmapSourceSlice(bitmap, rect);
-            var fittedRect = bitmapSourceSlice.GetFittedRectangle();
+            var fittedRect = bitmapSourceSlice.GetFittedRectangle();            
 
             AdjustCanvasFrameRectangleFrom(fittedRect);
 
-            selectedFrameRectangle = fittedRect;
-            selectedBitmapSourceSlice = new BitmapSourceSlice(bitmap, fittedRect);
+            Int32Rect finalRect = GetCanvasFrameAsRectangle();
+
+            selectedFrameRectangle = finalRect;
+            selectedBitmapSourceSlice = new BitmapSourceSlice(bitmap, finalRect);
+        }
+
+        private Int32Rect GetCanvasFrameAsRectangle()
+        {
+            var top = (double)CanvasFrameRectangle.GetValue(Canvas.TopProperty);
+            var left = (double)CanvasFrameRectangle.GetValue(Canvas.LeftProperty);
+
+            Int32Rect rect;
+            rect.X = (int)left;
+            rect.Y = (int)top;
+            rect.Width = (int)CanvasFrameRectangle.Width;
+            rect.Height = (int)CanvasFrameRectangle.Height;
+
+            return rect;
         }
 
         private void AdjustCanvasFrameRectangleFrom(Int32Rect rectangle)

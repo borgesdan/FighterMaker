@@ -101,5 +101,18 @@ namespace FighterMaker.Visual.Pages
         {
             return animations.Any(x => x.BasicValues.Name == animationName);
         }
+
+        private void AnimationSequence_FrameSelected(object sender, Rectangle? e)
+        {
+            if (e == null)
+                return;            
+
+            var source = e.Tag as BitmapSourceSlice;
+
+            if(source == null) 
+                return;
+
+            CanvasImage.Source = source.Cropped;
+        }       
     }
 }

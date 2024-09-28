@@ -29,7 +29,7 @@
                   VerticalContentAlignment="Center"
                   SelectionChanged="NameBox_SelectionChanged">            
         </ComboBox>
-        <ListView x:Name="FrameListView" Grid.Column="3">
+        <ListView x:Name="FrameListView" Grid.Column="3" SelectionChanged="FrameListView_SelectionChanged">
             <ListView.ItemsPanel>
                 <ItemsPanelTemplate>
                     <StackPanel Orientation="Horizontal"></StackPanel>

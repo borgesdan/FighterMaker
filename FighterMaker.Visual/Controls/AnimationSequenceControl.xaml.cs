@@ -26,7 +26,7 @@ namespace FighterMaker.Visual.Controls
         /// <summary>
         /// Gets or sets the selected animation.
         /// </summary>
-        public AnimationModel? SelectedAnimation 
+        public AnimationModel? SelectedAnimation
         {
             get
             {
@@ -47,16 +47,18 @@ namespace FighterMaker.Visual.Controls
                 value.BasicValues.EndNameChanged += AnimationModel_EndNameChanged;
 
                 NameBox.Items.Add(item);
-            } 
+            }
         }
 
         /// <summary>Event to be executed when the add animation button was clicked.</summary>
         public event RoutedEventHandler? AddAnimationButtonClick;
         /// <summary>Event to be executed the selected animation is changed</summary>
-        public event SelectionChangedEventHandler? NameBoxSelectionChanged;        
+        public event SelectionChangedEventHandler? NameBoxSelectionChanged;
+        /// <summary>Occurs when the selection of an animation frame is changed.</summary>
+        public event EventHandler<Rectangle?>? FrameSelectionChanged;
 
         public AnimationSequenceControl()
-        {            
+        {
             InitializeComponent();
         }
 
@@ -96,12 +98,12 @@ namespace FighterMaker.Visual.Controls
 
             sheetManagerPage.InsertAfterFrameButtonClick += SheetManagerPage_InsertAfterFrameButtonClick;
             sheetManagerPage.InsertBeforeFrameButtonClick += SheetManagerPage_InsertBeforeFrameButtonClick;
-            window.Content = frame;    
+            window.Content = frame;
             window.WindowStartupLocation = WindowStartupLocation.CenterOwner;
             window.Owner = App.Current.MainWindow;
 
             window.Show();
-        }       
+        }
 
         private void SheetManagerPage_InsertBeforeFrameButtonClick(object? sender, SpriteSheetEventArgs e)
         {
@@ -110,22 +112,22 @@ namespace FighterMaker.Visual.Controls
 
         private void SheetManagerPage_InsertAfterFrameButtonClick(object? sender, SpriteSheetEventArgs e)
         {
-            InsertFrame(e);
+            InsertFrame(e, true);
         }
 
-        private void InsertFrame(SpriteSheetEventArgs e, bool before = false)
+        private Rectangle? InsertFrame(SpriteSheetEventArgs e, bool before = false)
         {
             if (e.IsEmpty)
-                return;
+                return null;
 
             if (NameBox.SelectedItem == null)
-                return;
+                return null;
 
             Rectangle rectangle = new Rectangle();
             rectangle.Width = 20;
             rectangle.Height = 20;
-
             rectangle.Fill = Brushes.Green;
+            rectangle.Tag = e.FrameSource;
 
             int objIndex;
             var currentSelectedIndex = FrameListView.SelectedIndex;
@@ -145,6 +147,14 @@ namespace FighterMaker.Visual.Controls
             }
 
             FrameListView.SelectedIndex = objIndex;
+
+            return rectangle;
+        }
+
+        private void FrameListView_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            var selectedItem = FrameListView.SelectedItem as Rectangle;
+            FrameSelectionChanged?.Invoke(sender, selectedItem);
         }
     }
 }
