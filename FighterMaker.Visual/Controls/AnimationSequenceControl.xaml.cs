@@ -110,28 +110,20 @@ namespace FighterMaker.Visual.Controls
 
         private void SheetManagerPage_InsertBeforeFrameButtonClick(object? sender, SpriteSheetEventArgs e)
         {
-            var insertedFrame = InsertFrame(e, true);
-
-            //if (insertedFrame == null || insertedFrame.BitmapSlice == null)
-            //    return;
-
-            //var frameModel = new AnimationFrameModel
-            //{
-            //    SourceTexture = insertedFrame.BitmapSlice.Source,
-            //    Bounds = insertedFrame.BitmapSlice.SourceRectangle
-            //};
-
-            //SelectedAnimation?.Frames.Insert(insertedFrame.Index, frameModel);
+            var frame = InsertFrame(e, true);
+            UpdateModel(frame);
         }
 
         private void SheetManagerPage_InsertAfterFrameButtonClick(object? sender, SpriteSheetEventArgs e)
         {
-            InsertFrame(e);
+            var frame = InsertFrame(e);
+            UpdateModel(frame);
         }
 
         private void SheetManagerPage_ReplaceFrameButtonClick(object? sender, SpriteSheetEventArgs e)
         {
-            ReplaceFrame(e);
+            var frame = ReplaceFrame(e);
+            UpdateModel(frame);
         }
 
         private void FrameListView_SelectionChanged(object sender, SelectionChangedEventArgs e)
@@ -206,9 +198,44 @@ namespace FighterMaker.Visual.Controls
             {
                 Index = currentSelectedIndex,
                 BitmapSlice = e.FrameSource,
+                Replace = true
             };
 
             return replacedFrame;
+        }
+
+        private void UpdateModel(SelectedFrame? selectedFrame)
+        {
+            if (selectedFrame == null || selectedFrame.BitmapSlice == null)
+                return;            
+
+            if (selectedFrame.Replace)
+            {
+                try
+                {
+                    var frame = SelectedAnimation?.Frames[selectedFrame.Index];
+
+                    if (frame == null)
+                        throw new InvalidOperationException();
+
+                    frame.SourceTexture = selectedFrame.BitmapSlice.Source;
+                    frame.Bounds = selectedFrame.BitmapSlice.SourceRectangle;
+
+                } catch(Exception ex)
+                {
+                    MessageBox.Show(ex.Message);
+                }
+            }
+            else
+            {
+                var frameModel = new AnimationFrameModel
+                {
+                    SourceTexture = selectedFrame.BitmapSlice.Source,
+                    Bounds = selectedFrame.BitmapSlice.SourceRectangle
+                };
+
+                SelectedAnimation?.Frames.Insert(selectedFrame.Index, frameModel);
+            }            
         }
     }
 
@@ -216,5 +243,6 @@ namespace FighterMaker.Visual.Controls
     {
         public int Index { get; set; }
         public BitmapSourceSlice? BitmapSlice { get; set; }
+        public bool Replace { get; set; }
     }
 }
