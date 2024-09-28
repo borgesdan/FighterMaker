@@ -112,12 +112,12 @@ namespace FighterMaker.Visual.Controls
 
         private void SheetManagerPage_InsertAfterFrameButtonClick(object? sender, SpriteSheetEventArgs e)
         {
-            InsertFrame(e, true);
+            InsertFrame(e);
         }
 
         private Rectangle? InsertFrame(SpriteSheetEventArgs e, bool before = false)
         {
-            if (e.IsEmpty)
+            if (e.FrameSource == null)
                 return null;
 
             if (NameBox.SelectedItem == null)

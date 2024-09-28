@@ -7,17 +7,17 @@ namespace FighterMaker.Visual.Core
 {
     public class BitmapSourceSlice
     {
-        BitmapSource bitmap;
+        readonly BitmapSource bitmap;
         Int32Rect sourceRectangle;
-        CroppedBitmap cropped;
+        CroppedBitmap? cropped;
 
         /// <summary>
-        /// Obtém o bitmap de origem.
+        /// Gets the source bitmap.
         /// </summary>
         public BitmapSource Source => bitmap;
 
         /// <summary>
-        /// Obtém a proporção de (bits por pixel / 8) * a largura do retângulo de origem.
+        /// Gets the aspect ratio of (bits per pixel / 8) * the width of the source rectangle.
         /// </summary>
         public int Stride => sourceRectangle.Width * (bitmap.Format.BitsPerPixel / 8);
 
@@ -25,8 +25,7 @@ namespace FighterMaker.Visual.Core
         {
             get
             {
-                if (cropped == null)
-                    cropped = new CroppedBitmap(bitmap, sourceRectangle);
+                cropped ??= new CroppedBitmap(bitmap, sourceRectangle);
 
                 return cropped;
             }

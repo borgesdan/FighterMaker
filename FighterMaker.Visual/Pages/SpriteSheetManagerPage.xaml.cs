@@ -140,13 +140,13 @@ namespace FighterMaker.Visual.Pages
 
         private void InsertAfterFrameButton_Click(object sender, RoutedEventArgs e)
         {
-            var args = new SpriteSheetEventArgs(selectedFrameRectangle, selectedBitmapSourceSlice);
+            var args = new SpriteSheetEventArgs(selectedBitmapSourceSlice);
             InsertAfterFrameButtonClick?.Invoke(sender, args);
         }
 
         private void InsertBeforeFrameButton_Click(object sender, RoutedEventArgs e)
         {
-            var args = new SpriteSheetEventArgs(selectedFrameRectangle, selectedBitmapSourceSlice);
+            var args = new SpriteSheetEventArgs(selectedBitmapSourceSlice);
             InsertBeforeFrameButtonClick?.Invoke(sender, args);
         }
 
@@ -166,25 +166,14 @@ namespace FighterMaker.Visual.Pages
 
             AdjustCanvasFrameRectangleFrom(fittedRect);
 
-            Int32Rect finalRect = GetCanvasFrameAsRectangle();
+            selectedFrameRectangle = rect;
+            selectedFrameRectangle.X += fittedRect.X;
+            selectedFrameRectangle.Y += fittedRect.Y;
+            selectedFrameRectangle.Width = fittedRect.Width - fittedRect.X;
+            selectedFrameRectangle.Height = fittedRect.Height - fittedRect.Y;
 
-            selectedFrameRectangle = finalRect;
-            selectedBitmapSourceSlice = new BitmapSourceSlice(bitmap, finalRect);
-        }
-
-        private Int32Rect GetCanvasFrameAsRectangle()
-        {
-            var top = (double)CanvasFrameRectangle.GetValue(Canvas.TopProperty);
-            var left = (double)CanvasFrameRectangle.GetValue(Canvas.LeftProperty);
-
-            Int32Rect rect;
-            rect.X = (int)left;
-            rect.Y = (int)top;
-            rect.Width = (int)CanvasFrameRectangle.Width;
-            rect.Height = (int)CanvasFrameRectangle.Height;
-
-            return rect;
-        }
+            selectedBitmapSourceSlice = new BitmapSourceSlice(bitmap, selectedFrameRectangle);
+        }        
 
         private void AdjustCanvasFrameRectangleFrom(Int32Rect rectangle)
         {
