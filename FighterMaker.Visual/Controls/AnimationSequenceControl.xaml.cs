@@ -53,7 +53,7 @@ namespace FighterMaker.Visual.Controls
         /// <summary>Event to be executed when the add animation button was clicked.</summary>
         public event RoutedEventHandler? AddAnimationButtonClick;
         /// <summary>Event to be executed the selected animation is changed</summary>
-        public event SelectionChangedEventHandler? NameBoxSelectionChanged;
+        public event SelectionChangedEventHandler? NameBoxSelectionChanged;        
 
         public AnimationSequenceControl()
         {            
@@ -95,12 +95,25 @@ namespace FighterMaker.Visual.Controls
             };
 
             sheetManagerPage.InsertAfterFrameButtonClick += SheetManagerPage_InsertAfterFrameButtonClick;
-            window.Content = frame;            
+            sheetManagerPage.InsertBeforeFrameButtonClick += SheetManagerPage_InsertBeforeFrameButtonClick;
+            window.Content = frame;    
+            window.WindowStartupLocation = WindowStartupLocation.CenterOwner;
+            window.Owner = App.Current.MainWindow;
 
             window.Show();
+        }       
+
+        private void SheetManagerPage_InsertBeforeFrameButtonClick(object? sender, SpriteSheetEventArgs e)
+        {
+            InsertFrame(e, true);
         }
 
         private void SheetManagerPage_InsertAfterFrameButtonClick(object? sender, SpriteSheetEventArgs e)
+        {
+            InsertFrame(e);
+        }
+
+        private void InsertFrame(SpriteSheetEventArgs e, bool before = false)
         {
             if (e.IsEmpty)
                 return;
@@ -111,23 +124,26 @@ namespace FighterMaker.Visual.Controls
             Rectangle rectangle = new Rectangle();
             rectangle.Width = 20;
             rectangle.Height = 20;
-            
-            rectangle.Fill = Brushes.Black;
 
-            int objIndex = -1;
+            rectangle.Fill = Brushes.Green;
 
-            if(FrameListView.SelectedIndex > -1)
+            int objIndex;
+            var currentSelectedIndex = FrameListView.SelectedIndex;
+
+            if (currentSelectedIndex > -1)
             {
-                rectangle.Fill = Brushes.Red;
-                FrameListView.Items.Insert(FrameListView.SelectedIndex + 1, rectangle);
+                var insertIndex = before ? currentSelectedIndex : currentSelectedIndex + 1;
 
-                objIndex = FrameListView.SelectedIndex + 1;
+                rectangle.Fill = Brushes.Blue;
+                FrameListView.Items.Insert(insertIndex, rectangle);
+
+                objIndex = insertIndex;
             }
             else
             {
                 objIndex = FrameListView.Items.Add(rectangle);
             }
-            
+
             FrameListView.SelectedIndex = objIndex;
         }
     }

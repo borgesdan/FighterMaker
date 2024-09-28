@@ -41,6 +41,7 @@ namespace FighterMaker.Visual.Pages
         bool preventResizeRectangle = false;
 
         public event EventHandler<SpriteSheetEventArgs>? InsertAfterFrameButtonClick;
+        public event EventHandler<SpriteSheetEventArgs>? InsertBeforeFrameButtonClick;
 
         public SpriteSheetManagerPage()
         {
@@ -124,15 +125,28 @@ namespace FighterMaker.Visual.Pages
             if (oldLeftButtonState == MouseButtonState.Pressed && e.LeftButton == MouseButtonState.Released)
             {
                 oldLeftButtonState = MouseButtonState.Released;
-                AdjustRectangle();
+                
+                try
+                {
+                    AdjustRectangle();
+                }
+                catch
+                {
+                    MessageBox.Show("Operação inválida");
+                }
             }
         }       
 
         private void InsertAfterFrameButton_Click(object sender, RoutedEventArgs e)
         {
             var args = new SpriteSheetEventArgs(selectedFrameRectangle, selectedBitmapSourceSlice);
-
             InsertAfterFrameButtonClick?.Invoke(sender, args);
+        }
+
+        private void InsertBeforeFrameButton_Click(object sender, RoutedEventArgs e)
+        {
+            var args = new SpriteSheetEventArgs(selectedFrameRectangle, selectedBitmapSourceSlice);
+            InsertBeforeFrameButtonClick?.Invoke(sender, args);
         }
 
         private void AdjustRectangle()
@@ -191,6 +205,6 @@ namespace FighterMaker.Visual.Pages
 
             CanvasFrameRectangle.SetValue(Canvas.LeftProperty, left);
             CanvasFrameRectangle.SetValue(Canvas.TopProperty, top);
-        }
+        }        
     }      
 }
