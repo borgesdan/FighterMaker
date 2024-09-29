@@ -81,16 +81,10 @@ namespace FighterMaker.Visual.Controls
             }
 
             foreach(var frame in SelectedAnimation.Frames)
-            {
-                Rectangle rectangle = new Rectangle();
-                rectangle.Width = 20;
-                rectangle.Height = 20;
-                rectangle.Fill = Brushes.Green;
-
+            {                
                 BitmapSourceSlice slice = new BitmapSourceSlice(frame.SourceTexture, frame.Bounds);
-                rectangle.Tag = slice;
-
-                FrameListView.Items.Add(rectangle);                
+                var rectangle = CreateFrameViewRectangle(Brushes.Green, slice);
+                FrameListView.Items.Add(rectangle);
             }         
             
             FrameListView.SelectedIndex = 0;
@@ -161,12 +155,8 @@ namespace FighterMaker.Visual.Controls
 
             if (NameBox.SelectedItem == null)
                 return null;
-
-            Rectangle rectangle = new Rectangle();
-            rectangle.Width = 20;
-            rectangle.Height = 20;
-            rectangle.Fill = Brushes.Green;
-            rectangle.Tag = e.FrameSource;
+            
+            var rectangle = CreateFrameViewRectangle(Brushes.Green, e.FrameSource);
 
             int objIndex;
             var currentSelectedIndex = FrameListView.SelectedIndex;
@@ -258,6 +248,19 @@ namespace FighterMaker.Visual.Controls
 
                 SelectedAnimation?.Frames.Insert(selectedFrame.Index, frameModel);
             }            
+        }
+
+        private static Rectangle CreateFrameViewRectangle(Brush brush, BitmapSourceSlice? bitmapSourceSlice)
+        {
+            var rectangle = new Rectangle
+            {
+                Width = 20,
+                Height = 20,
+                Fill = brush,
+                Tag = bitmapSourceSlice
+            };
+
+            return rectangle;
         }
     }
 
