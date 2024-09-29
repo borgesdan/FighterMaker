@@ -72,6 +72,28 @@ namespace FighterMaker.Visual.Controls
         private void NameBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             NameBoxSelectionChanged?.Invoke(sender, e);
+            FrameListView.Items.Clear();
+
+            if (SelectedAnimation == null)
+            {
+                FrameListView.SelectedIndex = -1;
+                return;
+            }
+
+            foreach(var frame in SelectedAnimation.Frames)
+            {
+                Rectangle rectangle = new Rectangle();
+                rectangle.Width = 20;
+                rectangle.Height = 20;
+                rectangle.Fill = Brushes.Green;
+
+                BitmapSourceSlice slice = new BitmapSourceSlice(frame.SourceTexture, frame.Bounds);
+                rectangle.Tag = slice;
+
+                FrameListView.Items.Add(rectangle);                
+            }         
+            
+            FrameListView.SelectedIndex = 0;
         }
 
         //Forces the control to update if the animation name changes

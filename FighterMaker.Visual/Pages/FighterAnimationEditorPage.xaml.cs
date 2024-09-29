@@ -64,6 +64,22 @@ namespace FighterMaker.Visual.Pages
                 MainExpander.Content = propertiesViewControl;
         }
 
+        private void AnimationSequence_FrameSelected(object sender, Rectangle? e)
+        {
+            if (e == null)
+            {
+                CanvasImage.Source = null;
+                return;
+            }
+
+            var source = e.Tag as BitmapSourceSlice;
+
+            if (source == null)
+                return;
+
+            CanvasImage.Source = source.Cropped;
+        }
+
         private AnimationModel? AddAnimation(string animationName)
         {
             try
@@ -100,19 +116,6 @@ namespace FighterMaker.Visual.Pages
         private bool HasAnimation(string? animationName)
         {
             return animations.Any(x => x.BasicValues.Name == animationName);
-        }
-
-        private void AnimationSequence_FrameSelected(object sender, Rectangle? e)
-        {
-            if (e == null)
-                return;            
-
-            var source = e.Tag as BitmapSourceSlice;
-
-            if(source == null) 
-                return;
-
-            CanvasImage.Source = source.Cropped;
-        }       
+        }        
     }
 }
