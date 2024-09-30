@@ -57,7 +57,9 @@ namespace FighterMaker.Visual.Controls
         /// <summary>Event to be executed the selected animation is changed</summary>
         public event SelectionChangedEventHandler? NameBoxSelectionChanged;
         /// <summary>Occurs when the selection of an animation frame is changed.</summary>
-        public event EventHandler<Rectangle?>? FrameSelectionChanged;
+        public event EventHandler<BitmapSourceSlice?>? FrameSelectionChanged;
+
+        public event EventHandler<BitmapSourceSlice>? FrameValueReplaced;
 
         public AnimationSequenceControl()
         {
@@ -140,12 +142,20 @@ namespace FighterMaker.Visual.Controls
         {
             var frame = ReplaceFrame(e);
             UpdateModel(frame);
+
+            FrameValueReplaced?.Invoke(sender, e.FrameSource);
         }
 
         private void FrameListView_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             var selectedItem = FrameListView.SelectedItem as Rectangle;
-            FrameSelectionChanged?.Invoke(sender, selectedItem);
+
+            if (selectedItem == null)
+                return;                
+
+            var bitmap = selectedItem.Tag as BitmapSourceSlice;
+
+            FrameSelectionChanged?.Invoke(sender, bitmap);
         }
 
         private SelectedFrame? InsertFrame(SpriteSheetEventArgs e, bool before = false)
