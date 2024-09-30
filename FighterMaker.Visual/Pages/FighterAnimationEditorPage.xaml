@@ -26,6 +26,8 @@
             </Expander>
             <Canvas x:Name="MainCanvas" Background="CornflowerBlue">
                 <Image x:Name="CanvasImage" />
+                <Rectangle x:Name="CanvasHorizontalLine" Height="1" Fill="Black" Visibility="Collapsed" />
+                <Rectangle x:Name="CanvasVerticalLine" Width="1" Fill="Black" Visibility="Collapsed" />
             </Canvas>
         </DockPanel>
     </Grid>

@@ -68,22 +68,22 @@ namespace FighterMaker.Visual.Pages
         {
             if (e == null)
             {
-                CanvasImage.Source = null;
+                ResetCanvasObjects();
                 return;
-            }                        
+            }
 
-            CanvasImage.Source = e.Cropped;
+            SetCanvasObjects(e.Cropped);
         }
 
         private void AnimationSequence_FrameValueReplaced(object sender, BitmapSourceSlice e)
         {
             if (e == null)
             {
-                CanvasImage.Source = null;
+                ResetCanvasObjects();
                 return;
             }
 
-            CanvasImage.Source = e.Cropped;
+            SetCanvasObjects(e.Cropped);            
         }
 
         private AnimationModel? AddAnimation(string animationName)
@@ -123,5 +123,28 @@ namespace FighterMaker.Visual.Pages
         {
             return animations.Any(x => x.BasicValues.Name == animationName);
         }        
+
+        private void ResetCanvasObjects() 
+        {
+            CanvasVerticalLine.Visibility = Visibility.Collapsed;
+            CanvasHorizontalLine.Visibility = Visibility.Collapsed;
+            CanvasImage.Source = null;
+        }
+
+        private void SetCanvasObjects(BitmapSource bitmap)
+        {
+            CanvasImage.Source = bitmap;            
+            CanvasImage.RenderTransform = new TranslateTransform((MainCanvas.RenderSize.Width / 2) - bitmap.Width / 2, (MainCanvas.RenderSize.Height / 2) - bitmap.Height / 2);
+
+            CanvasVerticalLine.Visibility = Visibility.Visible;
+            CanvasVerticalLine.Height = MainCanvas.RenderSize.Height;            
+            var x = (double)CanvasImage.RenderTransform.GetValue(TranslateTransform.XProperty);
+            CanvasVerticalLine.RenderTransform = new TranslateTransform(x + bitmap.Width / 2, 0);
+
+            CanvasHorizontalLine.Visibility = Visibility.Visible;
+            CanvasHorizontalLine.Width = MainCanvas.RenderSize.Width;            
+            var y = (double)CanvasImage.RenderTransform.GetValue(TranslateTransform.YProperty);
+            CanvasHorizontalLine.RenderTransform = new TranslateTransform(0, y + bitmap.Height);
+        }
     }
 }
