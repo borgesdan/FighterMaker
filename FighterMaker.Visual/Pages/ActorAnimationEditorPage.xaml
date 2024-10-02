@@ -19,15 +19,14 @@
                                        Grid.Row="0"
                                        AddAnimationButtonClick="AnimationSequence_AddAnimationButtonClick"
                                        FrameSelectionChanged="AnimationSequence_FrameSelected"
-                                       FrameValueReplaced="AnimationSequence_FrameValueReplaced"/>
-        <DockPanel Grid.Row="1">
-            <Expander x:Name="MainExpander" ExpandDirection="Right" IsExpanded="False" >
-            </Expander>
+                                       FrameValueReplaced="AnimationSequence_FrameValueReplaced"/>        
+        <Grid Grid.Row="1">            
             <Canvas x:Name="MainCanvas" Background="CornflowerBlue">
-                <Image x:Name="CanvasImage" />
                 <Rectangle x:Name="CanvasHorizontalLine" Height="1" Fill="Black" Visibility="Collapsed" />
                 <Rectangle x:Name="CanvasVerticalLine" Width="1" Fill="Black" Visibility="Collapsed" />
+                <Image x:Name="CanvasImage" />                
             </Canvas>
-        </DockPanel>
+            <Expander x:Name="MainExpander" ExpandDirection="Right" IsExpanded="False" HorizontalAlignment="Left" />
+        </Grid>
     </Grid>
 </Page>
