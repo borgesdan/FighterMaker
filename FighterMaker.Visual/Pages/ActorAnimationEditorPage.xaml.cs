@@ -22,13 +22,13 @@ namespace FighterMaker.Visual.Pages
     /// <summary>
     /// Interaction logic for FighterAnimationEditorPage.xaml
     /// </summary>
-    public partial class FighterAnimationEditorPage : Page
+    public partial class ActorAnimationEditorPage : Page
     {
         AnimationModelCollection animations = [];
 
         private Dictionary<AnimationModel, PropertiesViewControl> propertiesViewControlsMap = [];
 
-        public FighterAnimationEditorPage()
+        public ActorAnimationEditorPage()
         {
             InitializeComponent();
         }        
