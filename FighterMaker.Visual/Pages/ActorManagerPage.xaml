@@ -9,6 +9,20 @@
       Title="ActorManagerPage">
 
     <Grid>
-        
+        <DockPanel>
+            <StackPanel Orientation="Horizontal" DockPanel.Dock="Top" Margin="0 5">
+                <Button x:Name="AddActorButton" Content="+" Width="32" Margin="5 0"/>
+                <ComboBox Width="200" />
+            </StackPanel>
+            <TabControl>
+                <TabItem Header="Animations">
+                    <Frame>
+                        <Frame.Content>
+                            <local:ActorAnimationEditorPage />
+                        </Frame.Content>
+                    </Frame>
+                </TabItem>
+            </TabControl>
+        </DockPanel>        
     </Grid>
 </Page>

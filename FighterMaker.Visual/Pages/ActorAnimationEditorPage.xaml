@@ -26,7 +26,7 @@
                 <Rectangle x:Name="CanvasVerticalLine" Width="1" Fill="Black" Visibility="Collapsed" />
                 <Image x:Name="CanvasImage" />                
             </Canvas>
-            <Expander x:Name="MainExpander" ExpandDirection="Right" IsExpanded="False" HorizontalAlignment="Left" />
+            <Expander x:Name="MainExpander" ExpandDirection="Left" IsExpanded="False" HorizontalAlignment="Right" />
         </Grid>
     </Grid>
 </Page>

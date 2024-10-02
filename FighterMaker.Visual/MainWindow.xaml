@@ -10,7 +10,7 @@
     <Grid>
         <Frame>
             <Frame.Content>
-                <pg:ActorAnimationEditorPage></pg:ActorAnimationEditorPage>
+                <pg:ActorManagerPage />
             </Frame.Content>
         </Frame>
     </Grid>
