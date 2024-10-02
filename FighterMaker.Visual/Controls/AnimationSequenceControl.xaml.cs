@@ -264,8 +264,8 @@ namespace FighterMaker.Visual.Controls
         {
             var rectangle = new Rectangle
             {
-                Width = 20,
-                Height = 20,
+                Width = 10,
+                Height = 10,
                 Fill = brush,
                 Tag = bitmapSourceSlice
             };
