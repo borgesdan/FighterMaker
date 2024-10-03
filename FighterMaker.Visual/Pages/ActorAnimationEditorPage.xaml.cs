@@ -33,7 +33,9 @@ namespace FighterMaker.Visual.Pages
         public ActorAnimationEditorPage()
         {
             InitializeComponent();
-        }
+            
+            AnimationSequence.NameBoxSelectionChanged += AnimationSequence_NameBoxSelectionChanged;
+        }        
         
         public ActorAnimationEditorPage AddActor(ActorModel actor)
         {
@@ -70,8 +72,9 @@ namespace FighterMaker.Visual.Pages
 
             propertiesViewControlsMap.TryGetValue(selectedAnimation, out PropertiesViewControl? propertiesViewControl);
 
-            if(propertiesViewControl != null)
-                MainExpander.Content = propertiesViewControl;
+            propertiesViewControl ??= AddPropertiesView(selectedAnimation);
+            
+            MainExpander.Content = propertiesViewControl;
         }
 
         private void AnimationSequence_FrameSelected(object sender, BitmapSourceSlice? e)
@@ -101,10 +104,6 @@ namespace FighterMaker.Visual.Pages
             try
             {
                 var animationModel = animations.Add(animationName);
-
-                //AnimationSequence.SelectedAnimation = animationModel;
-                AnimationSequence.NameBoxSelectionChanged += AnimationSequence_NameBoxSelectionChanged;                
-
                 return animationModel;
 
             }
