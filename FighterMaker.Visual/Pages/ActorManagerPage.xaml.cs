@@ -1,4 +1,8 @@
-﻿using System;
+﻿using FighterMaker.Visual.Core;
+using FighterMaker.Visual.Core.Extensions.Models;
+using FighterMaker.Visual.Models;
+using FighterMaker.Visual.Windows;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -20,9 +24,33 @@ namespace FighterMaker.Visual.Pages
     /// </summary>
     public partial class ActorManagerPage : Page
     {
+        private readonly ActorModelCollection actors = [];
+
+        public ActorModel? CurrentActor { get; set; }
+
         public ActorManagerPage()
         {
             InitializeComponent();
+        }
+
+        private void AddActorButton_Click(object sender, RoutedEventArgs e)
+        {
+            var window = new NewAnimationWindow();
+            var dialog = window.ShowDialog();
+
+            if (dialog != null && dialog.Value)
+            {
+                var model = new ActorModel() { Name = window.SelectedAnimationName };
+                model.Animations.Add(new AnimationModel().WithName("Standing"));
+                model.Animations.Add(new AnimationModel().WithName("Forward"));
+                model.Animations.Add(new AnimationModel().WithName("Backward"));
+                model.Animations.Add(new AnimationModel().WithName("Jump"));
+
+                actors.Add(model);
+                CurrentActor = model;
+
+                AnimationEditor.AddActor(model);
+            }
         }
     }
 }

@@ -1,4 +1,5 @@
-﻿using System;
+﻿using FighterMaker.Visual.Core;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -8,6 +9,8 @@ namespace FighterMaker.Visual.Models
 {
     public class ActorModel
     {
-        public List<ActorComponentModel> ComponentModels { get; set; } = [];
+        public string? Name { get; set; }
+        public List<ActorComponentModel> Components { get; set; } = [];
+        public AnimationModelCollection Animations { get; set; } = [];
     }
 }

@@ -17,6 +17,7 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 using FighterMaker.Visual.Core.Extensions;
+using System.Diagnostics;
 
 namespace FighterMaker.Visual.Controls
 {
@@ -25,32 +26,10 @@ namespace FighterMaker.Visual.Controls
     /// </summary>
     public partial class AnimationSequenceControl : UserControl
     {
-        /// <summary>
-        /// Gets or sets the selected animation.
-        /// </summary>
-        public AnimationModel? SelectedAnimation
-        {
-            get
-            {
-                var selected = NameBox.SelectedItem as ComboBoxItem;
-                return selected?.Content as AnimationModel;
-            }
-            set
-            {
-                if (value == null)
-                    return;
+        AnimationModelCollection animations = [];
 
-                var item = new ComboBoxItem
-                {
-                    Content = value,
-                    IsSelected = true
-                };
-
-                value.BasicValues.EndNameChanged += AnimationModel_EndNameChanged;
-
-                NameBox.Items.Add(item);
-            }
-        }
+        /// <summary> Gets the selected animation. </summary>
+        public AnimationModel? SelectedAnimation => NameBox.SelectedItem as AnimationModel;
 
         /// <summary>Event to be executed when the add animation button was clicked.</summary>
         public event RoutedEventHandler? AddAnimationButtonClick;
@@ -58,22 +37,54 @@ namespace FighterMaker.Visual.Controls
         public event SelectionChangedEventHandler? NameBoxSelectionChanged;
         /// <summary>Occurs when the selection of an animation frame is changed.</summary>
         public event EventHandler<BitmapSourceSlice?>? FrameSelectionChanged;
-
-        public event EventHandler<BitmapSourceSlice>? FrameValueReplaced;
+        /// <summary>Occurs when a frame of an animation has its value replaced.</summary>
+        public event EventHandler<BitmapSourceSlice?>? FrameValueReplaced;
 
         public AnimationSequenceControl()
         {
             InitializeComponent();
         }
 
-        private void AddAnimationButton_Click(object sender, RoutedEventArgs e)
+        public void SetCollection(AnimationModelCollection collection)
         {
-            AddAnimationButtonClick?.Invoke(sender, e);
+            animations = collection;
+            animations.ItemAdded += (sender, e) =>
+            {
+                NameBox.ItemsSource = animations;
+                NameBox.SelectedIndex = animations.Count - 1;
+                e.BasicValues.EndNameChanged -= AnimationNameChanged;
+                e.BasicValues.EndNameChanged += AnimationNameChanged;
+            };
+            
+            NameBox.ItemsSource = animations;
+
+            if(animations.Count > 0)
+            {
+                NameBox.SelectedIndex = 0;
+
+                foreach (var item in animations)
+                {
+                    item.BasicValues.EndNameChanged -= AnimationNameChanged;
+                    item.BasicValues.EndNameChanged += AnimationNameChanged;
+                }                    
+            }
         }
+
+        private void AnimationNameChanged(object? sender, string e)
+        {
+            this.UpdateLayout();
+
+            var selected = NameBox.SelectedItem;
+            NameBox.SelectedItem = null;
+            NameBox.SelectedItem = selected;
+        }
+
+        private void AddAnimationButton_Click(object sender, RoutedEventArgs e) => AddAnimationButtonClick?.Invoke(sender, e);
 
         private void NameBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             NameBoxSelectionChanged?.Invoke(sender, e);
+
             FrameListView.Items.Clear();
 
             if (SelectedAnimation == null)
@@ -83,24 +94,16 @@ namespace FighterMaker.Visual.Controls
             }
 
             foreach(var frame in SelectedAnimation.Frames)
-            {                
-                BitmapSourceSlice slice = new BitmapSourceSlice(frame.SourceTexture, frame.Bounds);
+            {
+                Debug.Assert(frame is not null && frame.SourceTexture is not null);
+
+                var slice = new BitmapSourceSlice(frame.SourceTexture, frame.Bounds);
                 var rectangle = CreateFrameViewRectangle(Brushes.Green, slice);
                 FrameListView.Items.Add(rectangle);
             }         
             
             FrameListView.SelectedIndex = 0;
-        }
-
-        //Forces the control to update if the animation name changes
-        private void AnimationModel_EndNameChanged(object? sender, string e)
-        {
-            this.UpdateLayout();
-
-            var selected = NameBox.SelectedItem;
-            NameBox.SelectedItem = null;
-            NameBox.SelectedItem = selected;
-        }
+        }        
 
         private void OpenSpriteSheetButton_Click(object sender, RoutedEventArgs e)
         {
@@ -129,18 +132,34 @@ namespace FighterMaker.Visual.Controls
         private void SheetManagerPage_InsertBeforeFrameButtonClick(object? sender, SpriteSheetEventArgs e)
         {
             var frame = InsertFrame(e, true);
+
+            Debug.Assert(frame is not null && frame.BitmapSlice is not null, "Frame or BitmapSlice is null");
+
+            if (frame is null)
+                return;
+            
+            var model = new AnimationFrameModel
+            {
+                SourceTexture = frame?.BitmapSlice?.Source,
+                Bounds = frame?.BitmapSlice != null ? frame.BitmapSlice.SourceRectangle : new Int32Rect()
+            };
+
+            SelectedAnimation?.Frames.Insert(frame!.Index, model);
+            
             UpdateModel(frame);
         }
 
         private void SheetManagerPage_InsertAfterFrameButtonClick(object? sender, SpriteSheetEventArgs e)
         {
-            var frame = InsertFrame(e);
+            var frame = InsertFrame(e);           
+
             UpdateModel(frame);
         }
 
         private void SheetManagerPage_ReplaceFrameButtonClick(object? sender, SpriteSheetEventArgs e)
         {
-            var frame = ReplaceFrame(e);
+            var frame = ReplaceFrame(e);            
+
             UpdateModel(frame);
 
             FrameValueReplaced?.Invoke(sender, e.FrameSource);
@@ -148,10 +167,8 @@ namespace FighterMaker.Visual.Controls
 
         private void FrameListView_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            var selectedItem = FrameListView.SelectedItem as Rectangle;
-
-            if (selectedItem == null)
-                return;                
+            if (FrameListView.SelectedItem is not Rectangle selectedItem)
+                return;
 
             var bitmap = selectedItem.Tag as BitmapSourceSlice;
 
@@ -211,10 +228,9 @@ namespace FighterMaker.Visual.Controls
                 return InsertFrame(e);                
             }
 
-            var selectedItem = FrameListView.SelectedItem as Rectangle;
 
-            if (selectedItem != null)
-                selectedItem.Fill = Brushes.Orange;            
+            if (FrameListView.SelectedItem is Rectangle selectedItem)
+                selectedItem.Fill = Brushes.Orange;
 
             var replacedFrame = new SelectedFrame
             {
@@ -235,11 +251,7 @@ namespace FighterMaker.Visual.Controls
             {
                 try
                 {
-                    var frame = SelectedAnimation?.Frames[selectedFrame.Index];
-
-                    if (frame == null)
-                        throw new InvalidOperationException();
-
+                    var frame = (SelectedAnimation?.Frames[selectedFrame.Index]) ?? throw new InvalidOperationException();
                     frame.SourceTexture = selectedFrame.BitmapSlice.Source;
                     frame.Bounds = selectedFrame.BitmapSlice.SourceRectangle;
 

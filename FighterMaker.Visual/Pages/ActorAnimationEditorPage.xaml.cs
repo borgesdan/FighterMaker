@@ -28,10 +28,20 @@ namespace FighterMaker.Visual.Pages
 
         private Dictionary<AnimationModel, PropertiesViewControl> propertiesViewControlsMap = [];
 
+        public ActorModel? CurrentActor { get; set; }
+
         public ActorAnimationEditorPage()
         {
             InitializeComponent();
-        }        
+        }
+        
+        public ActorAnimationEditorPage AddActor(ActorModel actor)
+        {
+            CurrentActor = actor;
+            animations = actor.Animations;            
+            AnimationSequence.SetCollection(animations);
+            return this;
+        }
 
         private void AnimationSequence_AddAnimationButtonClick(object sender, RoutedEventArgs e)
         {
@@ -92,7 +102,7 @@ namespace FighterMaker.Visual.Pages
             {
                 var animationModel = animations.Add(animationName);
 
-                AnimationSequence.SelectedAnimation = animationModel;
+                //AnimationSequence.SelectedAnimation = animationModel;
                 AnimationSequence.NameBoxSelectionChanged += AnimationSequence_NameBoxSelectionChanged;                
 
                 return animationModel;
@@ -117,11 +127,6 @@ namespace FighterMaker.Visual.Pages
             propertiesViewControlsMap.Add(animationModel, propertiesView);
 
             return propertiesView;
-        }
-
-        private bool HasAnimation(string? animationName)
-        {
-            return animations.Any(x => x.BasicValues.Name == animationName);
         }        
 
         private void ResetCanvasObjects() 
