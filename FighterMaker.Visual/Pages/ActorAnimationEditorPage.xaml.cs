@@ -37,7 +37,7 @@ namespace FighterMaker.Visual.Pages
             AnimationSequence.NameBoxSelectionChanged += AnimationSequence_NameBoxSelectionChanged;
         }        
         
-        public ActorAnimationEditorPage AddActor(ActorModel actor)
+        public ActorAnimationEditorPage SetActor(ActorModel actor)
         {
             CurrentActor = actor;
             animations = actor.Animations;            
@@ -55,9 +55,9 @@ namespace FighterMaker.Visual.Pages
                 var animationModel = AddAnimation(newAnimationWindow.SelectedAnimationName);
 
                 if (animationModel == null)
-                    return;
+                    return;                
 
-                var propertiesView = AddPropertiesView(animationModel);
+                var propertiesView = AddOrGetPropertiesViewControl(animationModel);
 
                 MainExpander.Content = propertiesView;
             }
@@ -70,9 +70,7 @@ namespace FighterMaker.Visual.Pages
             if (selectedAnimation == null)
                 return;            
 
-            propertiesViewControlsMap.TryGetValue(selectedAnimation, out PropertiesViewControl? propertiesViewControl);
-
-            propertiesViewControl ??= AddPropertiesView(selectedAnimation);
+            var propertiesViewControl = AddOrGetPropertiesViewControl(selectedAnimation);
             
             MainExpander.Content = propertiesViewControl;
         }
@@ -113,6 +111,15 @@ namespace FighterMaker.Visual.Pages
                 return null;
             }            
         }        
+
+        private PropertiesViewControl AddOrGetPropertiesViewControl(AnimationModel animationModel)
+        {
+            propertiesViewControlsMap.TryGetValue(animationModel, out PropertiesViewControl? propertiesViewControl);
+
+            propertiesViewControl ??= AddPropertiesView(animationModel);
+
+            return propertiesViewControl;
+        }
 
         private PropertiesViewControl AddPropertiesView(AnimationModel animationModel)
         {

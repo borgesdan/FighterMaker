@@ -40,16 +40,12 @@ namespace FighterMaker.Visual.Pages
 
             if (dialog != null && dialog.Value)
             {
-                var model = new ActorModel() { Name = window.SelectedAnimationName };
-                model.Animations.Add(new AnimationModel().WithName("Standing"));
-                model.Animations.Add(new AnimationModel().WithName("Forward"));
-                model.Animations.Add(new AnimationModel().WithName("Backward"));
-                model.Animations.Add(new AnimationModel().WithName("Jump"));
+                var model = new ActorModel() { Name = window.SelectedAnimationName };                
 
                 actors.Add(model);
                 CurrentActor = model;
 
-                AnimationEditor.AddActor(model);
+                AnimationEditor.SetActor(model);
             }
         }
     }
