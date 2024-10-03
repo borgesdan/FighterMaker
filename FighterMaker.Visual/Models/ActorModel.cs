@@ -12,5 +12,10 @@ namespace FighterMaker.Visual.Models
         public string? Name { get; set; }
         public List<ActorComponentModel> Components { get; set; } = [];
         public AnimationModelCollection Animations { get; set; } = [];
+
+        public override string ToString()
+        {
+            return Name ?? string.Empty;
+        }
     }
 }

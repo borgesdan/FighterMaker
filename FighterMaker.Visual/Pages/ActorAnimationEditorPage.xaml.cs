@@ -42,6 +42,7 @@ namespace FighterMaker.Visual.Pages
             CurrentActor = actor;
             animations = actor.Animations;            
             AnimationSequence.SetCollection(animations);
+            ResetCanvasObjects();
             return this;
         }
 

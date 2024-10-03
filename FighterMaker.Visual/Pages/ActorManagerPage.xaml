@@ -5,14 +5,13 @@
       xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
       xmlns:local="clr-namespace:FighterMaker.Visual.Pages"
       mc:Ignorable="d" 
-      d:DesignHeight="450" d:DesignWidth="800"
-      Title="ActorManagerPage">
+      d:DesignHeight="450" d:DesignWidth="800" Title="ActorManagerPage" Loaded="Page_Loaded">
 
     <Grid>
         <DockPanel>
             <StackPanel Orientation="Horizontal" DockPanel.Dock="Top" Margin="0 5">
                 <Button x:Name="AddActorButton" Content="+" Width="32" Margin="5 0" Click="AddActorButton_Click"/>
-                <ComboBox Width="200" />
+                <ComboBox x:Name="ActorComboBox" Width="200" SelectionChanged="ActorComboBox_SelectionChanged" />
             </StackPanel>
             <TabControl>
                 <TabItem Header="Animations">

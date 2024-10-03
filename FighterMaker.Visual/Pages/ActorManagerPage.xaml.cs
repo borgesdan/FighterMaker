@@ -4,6 +4,7 @@ using FighterMaker.Visual.Models;
 using FighterMaker.Visual.Windows;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -44,9 +45,37 @@ namespace FighterMaker.Visual.Pages
 
                 actors.Add(model);
                 CurrentActor = model;
+                ActorComboBox.ItemsSource = actors;
+                ActorComboBox.SelectedIndex = actors.Count - 1;
 
+                AnimationEditor.IsEnabled = true;
                 AnimationEditor.SetActor(model);
             }
+        }
+
+        private void ActorComboBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            var model = ActorComboBox.SelectedItem as ActorModel;
+
+            Debug.Assert(model != null);
+
+            if (model == null)
+            {
+                ApplyDefaultLayout();
+                return;
+            }                
+
+            AnimationEditor.SetActor(model);
+        }
+
+        private void Page_Loaded(object sender, RoutedEventArgs e)
+        {
+            ApplyDefaultLayout();
+        }
+
+        private void ApplyDefaultLayout()
+        {
+            AnimationEditor.IsEnabled = false;
         }
     }
 }
