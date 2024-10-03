@@ -8,7 +8,7 @@ namespace FighterMaker.Visual.Core.Attributes
 {
     public class ActorComponentAttribute : Attribute
     {
-        public string? Name { get; set; }
-        public bool Enabled { get; set; }
+        public string? Name { get; set; }        
+        public Guid Uid { get; set; } = Guid.NewGuid();
     }
 }

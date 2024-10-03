@@ -1,11 +1,14 @@
 ﻿using FighterMaker.Visual.Core;
+using FighterMaker.Visual.Core.Attributes;
 using FighterMaker.Visual.Core.Extensions.Models;
 using FighterMaker.Visual.Models;
+using FighterMaker.Visual.Models.Components;
 using FighterMaker.Visual.Windows;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
+using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
@@ -70,7 +73,7 @@ namespace FighterMaker.Visual.Pages
 
         private void Page_Loaded(object sender, RoutedEventArgs e)
         {
-            ApplyDefaultLayout();
+            ApplyDefaultLayout();            
         }
 
         private void ApplyDefaultLayout()

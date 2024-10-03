@@ -18,8 +18,4 @@
     </EmbeddedResource>
   </ItemGroup>
 
-  <ItemGroup>
-    <Folder Include="Models\Components\" />
-  </ItemGroup>
-
 </Project>

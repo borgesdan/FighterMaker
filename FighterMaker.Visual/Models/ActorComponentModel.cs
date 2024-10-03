@@ -8,6 +8,11 @@ namespace FighterMaker.Visual.Models
 {
     public class ActorComponentModel
     {
-        public ActorModel? Actor { get; set; }
+        public ActorModel Actor { get; set; }
+
+        public ActorComponentModel(ActorModel actor)
+        {
+            Actor = actor;
+        }
     }
 }
