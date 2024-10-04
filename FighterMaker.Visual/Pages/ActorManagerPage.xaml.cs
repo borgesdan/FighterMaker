@@ -2,7 +2,6 @@
 using FighterMaker.Visual.Core.Attributes;
 using FighterMaker.Visual.Core.Extensions.Models;
 using FighterMaker.Visual.Models;
-using FighterMaker.Visual.Models.Components;
 using FighterMaker.Visual.Windows;
 using System;
 using System.Collections.Generic;

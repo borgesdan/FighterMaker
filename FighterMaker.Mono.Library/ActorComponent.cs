@@ -1,33 +1,36 @@
 ﻿using FighterMaker.Mono.Library.Interfaces;
-using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using System.Collections.Generic;
+using Microsoft.Xna.Framework;
 
 namespace FighterMaker.Mono.Library
 {
-    public abstract class Actor : IActor
+    public class ActorComponent : IActorComponent
     {
-        public Transform Transform { get; set; }
         public bool IsEnabled { get; set; } = true;
         public bool IsVisible { get; set; } = true;
 
-        public List<ActorComponent> Components { get; set; } = new List<ActorComponent>();
+        public Actor Actor { get; protected set; }
 
-        public void Update(GameTime gameTime) 
+        public ActorComponent() { }
+
+        public void Attach(Actor actor)
+        {
+            Actor = actor;
+        }
+
+        public void Update(GameTime gameTime)
         {
             if (IsEnabled)
             {
                 OnUpdate(gameTime);
-                Components.ForEach(x => x.Update(gameTime));
             }
         }
 
-        public void Draw(GameTime gameTime, SpriteBatch spriteBatch) 
+        public void Draw(GameTime gameTime, SpriteBatch spriteBatch)
         {
             if (IsVisible)
             {
                 OnDraw(gameTime, spriteBatch);
-                Components.ForEach(x => x.Draw(gameTime, spriteBatch));
             }
         }
 

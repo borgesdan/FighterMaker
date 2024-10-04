@@ -1,15 +1,13 @@
-﻿using Microsoft.Xna.Framework;
-using Microsoft.Xna.Framework.Graphics;
-using System.Collections.Generic;
+﻿using Microsoft.Xna.Framework.Graphics;
+using Microsoft.Xna.Framework;
 
 namespace FighterMaker.Mono.Library.Interfaces
 {
-    public interface IActor
+    public interface IActorComponent
     {
-        Transform Transform { get; set; }
         bool IsEnabled { get; set; }
         bool IsVisible { get; set; }
-        List<ActorComponent> Components { get; set; }
+        void Attach(Actor actor);
 
         void Update(GameTime gameTime);
         void Draw(GameTime gameTime, SpriteBatch spriteBatch);

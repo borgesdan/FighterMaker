@@ -22,7 +22,7 @@ namespace FighterMaker.Mono.Library
         /// <summary>
         /// Obtém ou define a textura que representa a folha de sprites.
         /// </summary>
-        public Texture2D SpriteSheetTexture { get; set; }
+        public Texture2D SpriteSheetTexture { get; set; } = null;
 
         /// <summary>
         /// Obtém ou define o nome da animação.
@@ -49,13 +49,15 @@ namespace FighterMaker.Mono.Library
         /// </summary>
         public OriginPoint DefaultOrigin { get; set; } = OriginPoint.TopLeft;
 
-        public SpriteSheetAnimation(string animationName, Texture2D spriteSheetTexture, List<AnimationFrame> frames)
+        public SpriteSheetAnimation(string animationName, List<AnimationFrame> frames)
+        {
+            Name = animationName;
+            Frames = frames ?? new List<AnimationFrame>();
+        }
+
+        public SpriteSheetAnimation(string animationName, List<AnimationFrame> frames, Texture2D spriteSheetTexture) : this(animationName, frames)
         {
             SpriteSheetTexture = spriteSheetTexture ?? throw new ArgumentNullException(nameof(spriteSheetTexture));
-
-            Name = animationName;
-            Frames = frames ?? new List<AnimationFrame>();            
-
             Frames.ForEach(f => f.SourceTexture = spriteSheetTexture);
         }
 
