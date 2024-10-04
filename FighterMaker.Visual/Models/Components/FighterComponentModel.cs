@@ -9,11 +9,9 @@ using System.Threading.Tasks;
 namespace FighterMaker.Visual.Models.Components
 {
     [ActorComponent(Name = "Fighter")]
-    public class FighterComponent : ActorComponentModel
+    public class FighterComponentModel : ActorComponentModel
     {
-        public FighterComponentPage Page { get; set; }
-
-        public FighterComponent(ActorModel actor) : base(actor)
+        public FighterComponentModel(ActorModel actor) : base(actor)
         {
         }
     }

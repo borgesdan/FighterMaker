@@ -13,6 +13,9 @@
                 <Button x:Name="AddActorButton" Content="+" Width="32" Margin="5 0" Click="AddActorButton_Click"/>
                 <ComboBox x:Name="ActorComboBox" Width="200" SelectionChanged="ActorComboBox_SelectionChanged" />
             </StackPanel>
+            <Expander ExpandDirection="Right">
+                <Rectangle Fill="Black" Width="400" />
+            </Expander>
             <TabControl>
                 <TabItem Header="Animations">
                     <Frame>
