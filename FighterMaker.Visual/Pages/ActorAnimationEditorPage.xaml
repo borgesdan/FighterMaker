@@ -1,4 +1,4 @@
-﻿<Page x:Class="FighterMaker.Visual.Pages.FighterAnimationEditorPage"
+﻿<Page x:Class="FighterMaker.Visual.Pages.ActorAnimationEditorPage"
       xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
       xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
       xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
@@ -9,26 +9,20 @@
       d:DesignHeight="450" d:DesignWidth="800"
       Title="FighterAnimationEditorPage">
 
-    <Grid>
-        <Grid.RowDefinitions>
-            <RowDefinition Height="60" />
-            <RowDefinition />
-            <RowDefinition Height="32" />
-        </Grid.RowDefinitions>
+    <DockPanel>       
         <ctrl:AnimationSequenceControl x:Name="AnimationSequence"
+                                       DockPanel.Dock="Top"
                                        Grid.Row="0"
                                        AddAnimationButtonClick="AnimationSequence_AddAnimationButtonClick"
                                        FrameSelectionChanged="AnimationSequence_FrameSelected"
-                                       FrameValueReplaced="AnimationSequence_FrameValueReplaced"/>
-        <DockPanel Grid.Row="1">
-            <Expander x:Name="MainExpander" ExpandDirection="Right" IsExpanded="False" >                
-                <!-- <ctrl:PropertiesViewControl x:Name="PropertiesView" Width="300"></ctrl:PropertiesViewControl>-->
-            </Expander>
+                                       FrameValueReplaced="AnimationSequence_FrameValueReplaced"/>        
+        <Grid Grid.Row="1">            
             <Canvas x:Name="MainCanvas" Background="CornflowerBlue">
-                <Image x:Name="CanvasImage" />
                 <Rectangle x:Name="CanvasHorizontalLine" Height="1" Fill="Black" Visibility="Collapsed" />
                 <Rectangle x:Name="CanvasVerticalLine" Width="1" Fill="Black" Visibility="Collapsed" />
+                <Image x:Name="CanvasImage" />                
             </Canvas>
-        </DockPanel>
-    </Grid>
+            <Expander x:Name="MainExpander" ExpandDirection="Left" IsExpanded="False" HorizontalAlignment="Right" />
+        </Grid>
+    </DockPanel>
 </Page>

@@ -10,7 +10,7 @@
     <Grid>
         <Frame>
             <Frame.Content>
-                <pg:FighterAnimationEditorPage></pg:FighterAnimationEditorPage>
+                <pg:ActorManagerPage />
             </Frame.Content>
         </Frame>
     </Grid>

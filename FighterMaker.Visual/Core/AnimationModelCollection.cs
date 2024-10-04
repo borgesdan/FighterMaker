@@ -12,9 +12,16 @@ namespace FighterMaker.Visual.Core
     {
         readonly List<AnimationModel> items = [];
 
+        public event EventHandler<AnimationModel>? ItemAdded;
+
         public AnimationModelCollection()
         {
-        }        
+        }
+
+        public AnimationModel this[int index]
+        {
+            get => items [index];
+        }
 
         public int Count => items.Count;
 
@@ -35,6 +42,9 @@ namespace FighterMaker.Visual.Core
             animationModel.BasicValues.Name = animationName;            
 
             items.Add(animationModel);
+
+            ItemAdded?.Invoke(this, animationModel);
+
             return animationModel;
         }
 
