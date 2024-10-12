@@ -1,0 +1,17 @@
+﻿<Window x:Class="FighterMaker.Visual.Windows.NewListViewWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:FighterMaker.Visual.Windows"
+        mc:Ignorable="d"
+        Title="New Value" Height="250" Width="350" WindowStyle="ToolWindow" WindowStartupLocation="CenterScreen" KeyDown="Window_KeyDown">
+    <Grid>
+        <DockPanel>
+            <Rectangle Fill="CornflowerBlue" DockPanel.Dock="Top" Height="10" />
+            <Label x:Name="InfoLabel" Content="Select:" DockPanel.Dock="Top" />
+            <Button Content="OK" Width="100" Margin="5" DockPanel.Dock="Bottom" Click="Button_Click"/>
+            <ListView x:Name="ListValue" SelectionMode="Single"/>            
+        </DockPanel>
+    </Grid>
+</Window>

@@ -1,9 +1,12 @@
-﻿using FighterMaker.Visual.Core;
+﻿using FighterMaker.Visual.Controls;
+using FighterMaker.Visual.Core;
 using FighterMaker.Visual.Core.Attributes;
 using FighterMaker.Visual.Core.Extensions.Models;
 using FighterMaker.Visual.Models;
+using FighterMaker.Visual.Plugins;
 using FighterMaker.Visual.Windows;
 using System;
+using System.CodeDom;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
@@ -17,6 +20,7 @@ using System.Windows.Documents;
 using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
+using System.Windows.Media.Media3D;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 
@@ -27,57 +31,169 @@ namespace FighterMaker.Visual.Pages
     /// </summary>
     public partial class ActorManagerPage : Page
     {
-        private readonly ActorModelCollection actors = [];
-
-        public ActorModel? CurrentActor { get; set; }
+        private readonly ActorModelCollection actorCollection = [];
+        private readonly Dictionary<ActorModel, PropertiesControl> propertiesControlDictionary = [];
+        private ActorModel? currentActor;
 
         public ActorManagerPage()
         {
             InitializeComponent();
+            actorCollection.ItemAdded += Actors_ItemAdded;
+            ActorComboBox.ItemsSource = actorCollection;           
+        }
+
+        private void Actors_ItemAdded(object? sender, ActorModel e)
+        {
+            ActorComboBox.ItemsSource = null;
+            ActorComboBox.ItemsSource = actorCollection;
+            
+            //ActorComboBox.UpdateLayout();
+            ActorComboBox.SelectedIndex = actorCollection.Count - 1;
+        }
+
+        private PropertiesControl GetOrCreatePropertiesViewControl(ActorModel model)
+        {
+            Debug.Assert(model != null);
+
+            if (propertiesControlDictionary.TryGetValue(model, out PropertiesControl? control))
+                return control;
+
+            model.AddPlugin(new AnimationPlugin());
+
+            control = new PropertiesControl();
+            control.Width = 300;
+            control.SetModel(model);
+            control.AnalizeModel();
+            control.PopulateControl();
+            propertiesControlDictionary.Add(model, control);
+
+            return control;
+        }
+
+        private void SetCurrentPropertiesControl(PropertiesControl control)
+        {
+            Debug.Assert(control != null);
+
+            if (ExpanderDockInStackPanel.Children.Count > 0)
+                ExpanderDockInStackPanel.Children.Clear();
+
+            ExpanderDockInStackPanel.Children.Add(control);
         }
 
         private void AddActorButton_Click(object sender, RoutedEventArgs e)
         {
-            var window = new NewAnimationWindow();
+            var window = new NewTextWindow();
             var dialog = window.ShowDialog();
 
             if (dialog != null && dialog.Value)
             {
-                var model = new ActorModel() { Name = window.SelectedAnimationName };                
+                var model = new ActorModel().WithName(window.SettedValue);
+                currentActor = model;
+                AnalizeActorPlugins();
 
-                actors.Add(model);
-                CurrentActor = model;
-                ActorComboBox.ItemsSource = actors;
-                ActorComboBox.SelectedIndex = actors.Count - 1;
+                var propertiesViewControl = GetOrCreatePropertiesViewControl(model);
 
-                AnimationEditor.IsEnabled = true;
-                AnimationEditor.SetActor(model);
+                SetCurrentPropertiesControl(propertiesViewControl);
+                actorCollection.Add(model);
+            }
+        }
+
+        private void AnalizeActorPlugins()
+        {
+            if (currentActor == null)
+                return;
+
+            var plugins = currentActor.Plugins;
+            MainTab.Items.Clear();
+
+            foreach (var plugin in plugins) 
+            {
+                var attribute = plugin.GetType().GetCustomAttribute<PluginAttribute>();
+                var properties = plugin.GetType().GetProperties();
+
+                foreach (var property in properties) 
+                {                    
+                    var value = property.GetValue(plugin, null);
+                    if(value is Page page)
+                    {                        
+                        var frame = new Frame
+                        {
+                            Content = page
+                        };
+
+                        var item = new TabItem
+                        {
+                            Content = frame,
+                            IsSelected = true,
+                            Header = attribute?.Name
+                        };
+
+                        MainTab.Items.Add(item);
+                    }
+                }
             }
         }
 
         private void ActorComboBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            var model = ActorComboBox.SelectedItem as ActorModel;
-
-            Debug.Assert(model != null);
-
-            if (model == null)
+            if (ActorComboBox.SelectedItem is not ActorModel model)
             {
-                ApplyDefaultLayout();
+                DisableLayout();
                 return;
-            }                
+            }
 
-            AnimationEditor.SetActor(model);
+            var propertyView = propertiesControlDictionary[model];
+
+            if (ExpanderDockInStackPanel.Children.Count > 0)
+                ExpanderDockInStackPanel.Children.Clear();
+
+            ExpanderDockInStackPanel.Children.Add(propertyView);
+            AnalizeActorPlugins();
+
+            EnableLayout();
         }
 
         private void Page_Loaded(object sender, RoutedEventArgs e)
         {
-            ApplyDefaultLayout();            
+            DisableLayout();            
         }
 
-        private void ApplyDefaultLayout()
+        private void DisableLayout()
+        {            
+            MainTab.IsEnabled = false;
+            MainExpander.IsEnabled = false;
+        }
+
+        private void EnableLayout()
         {
-            AnimationEditor.IsEnabled = false;
+            MainTab.IsEnabled = true;
+            MainExpander.IsEnabled = true;
+        }
+
+        private void ExpanderAddPluginButton_Click(object sender, RoutedEventArgs e)
+        {           
+            var analiser = AssemblyAnalizer.FromExecutingAssembly();
+            var types = analiser.GetTypesWithAttribute<PluginAttribute>();
+
+            var window = new NewListViewWindow();
+            window.ListSource = types;
+            var dialog = window.ShowDialog();
+
+            if (dialog != null && dialog.Value)
+            {
+                var selectedType = window.SelectedValue as Type;
+
+                if (selectedType == null)
+                    return;
+
+                var selectedPlugin = Activator.CreateInstance(selectedType);
+
+                if (selectedPlugin == null || selectedPlugin is not Plugin)
+                    return;
+
+                currentActor.AddPlugin((Plugin)selectedPlugin);
+                AnalizeActorPlugins();
+            }
         }
     }
 }

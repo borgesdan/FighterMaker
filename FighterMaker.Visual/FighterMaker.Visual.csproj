@@ -13,6 +13,10 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\FighterMaker.Mono.Library\FighterMaker.Mono.Library.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
     <EmbeddedResource Update="MessageResource.en-US.resx">
       <Generator>PublicResXFileCodeGenerator</Generator>
     </EmbeddedResource>

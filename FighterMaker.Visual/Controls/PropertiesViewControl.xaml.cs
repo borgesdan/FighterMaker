@@ -2,6 +2,7 @@
 using FighterMaker.Visual.Core.Attributes;
 using FighterMaker.Visual.Core.Extensions;
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
@@ -77,7 +78,7 @@ namespace FighterMaker.Visual.Controls
             var analized = AnalizeSupportedType(owner, property, currentGroupBox);
 
             if (analized)
-                return;
+                return;            
 
             AnalizeUnsupportedType(owner, property, currentGroupBox);
         } 
@@ -101,7 +102,7 @@ namespace FighterMaker.Visual.Controls
                     var textBox = new PropertyDoubleBox(owner, property);
                     textBox.Height = 28;
                     uIElement = textBox;
-                }
+                }                
 
                 if (uIElement == null)
                     throw new NullReferenceException();
@@ -124,7 +125,7 @@ namespace FighterMaker.Visual.Controls
         {
             var propType = property.PropertyType;
 
-            if (propType.IsArray || propType.IsCollectible)
+            if (propType.IsArray || propType.IsGenericList())
                 return;
 
             if (currentGroupBox == null)

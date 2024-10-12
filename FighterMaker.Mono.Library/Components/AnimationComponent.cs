@@ -31,5 +31,10 @@ namespace FighterMaker.Mono.Library.Components
 
             base.OnDraw(gameTime, spriteBatch);
         }
+
+        protected override void OnInitialize()
+        {
+            base.OnInitialize();
+        }
     }
 }

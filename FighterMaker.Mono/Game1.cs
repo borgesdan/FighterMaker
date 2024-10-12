@@ -1,4 +1,6 @@
-﻿using Microsoft.Xna.Framework;
+﻿using FighterMaker.Mono.Library;
+using FighterMaker.Mono.Library.Components;
+using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 
@@ -28,6 +30,9 @@ namespace FighterMaker.Mono
             _spriteBatch = new SpriteBatch(GraphicsDevice);
 
             // TODO: use this.Content to load your game content here
+            Actor actor = new Actor();
+            FighterComponent fighterComponent = new FighterComponent();
+            actor.AddComponent(fighterComponent);
         }
 
         protected override void Update(GameTime gameTime)
@@ -36,6 +41,7 @@ namespace FighterMaker.Mono
                 Exit();
 
             // TODO: Add your update logic here
+            
 
             base.Update(gameTime);
         }

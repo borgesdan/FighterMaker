@@ -1,12 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.ComponentModel.DataAnnotations;
-using System.Linq;
-using System.Reflection;
-using System.Runtime.CompilerServices;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Reflection;
 
 namespace FighterMaker.Visual.Core.Extensions
 {
@@ -28,6 +20,6 @@ namespace FighterMaker.Visual.Core.Extensions
             var attr = attributes.FirstOrDefault();
 
             return attr as T;
-        }        
+        }
     }
 }

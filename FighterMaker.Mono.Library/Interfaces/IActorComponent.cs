@@ -7,7 +7,10 @@ namespace FighterMaker.Mono.Library.Interfaces
     {
         bool IsEnabled { get; set; }
         bool IsVisible { get; set; }
+
         void Attach(Actor actor);
+
+        void Initialize();
 
         void Update(GameTime gameTime);
         void Draw(GameTime gameTime, SpriteBatch spriteBatch);

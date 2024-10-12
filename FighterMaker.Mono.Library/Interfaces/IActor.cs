@@ -9,8 +9,10 @@ namespace FighterMaker.Mono.Library.Interfaces
         Transform Transform { get; set; }
         bool IsEnabled { get; set; }
         bool IsVisible { get; set; }
-        List<ActorComponent> Components { get; set; }
+        List<IActorComponent> Components { get; set; }
 
+        void Initialize();
+        void LoadContent();
         void Update(GameTime gameTime);
         void Draw(GameTime gameTime, SpriteBatch spriteBatch);
     }

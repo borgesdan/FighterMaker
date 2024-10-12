@@ -4,6 +4,7 @@
       xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
       xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
       xmlns:local="clr-namespace:FighterMaker.Visual.Pages"
+      xmlns:ctrl="clr-namespace:FighterMaker.Visual.Controls"
       mc:Ignorable="d" 
       d:DesignHeight="450" d:DesignWidth="800" Title="ActorManagerPage" Loaded="Page_Loaded">
 
@@ -13,10 +14,14 @@
                 <Button x:Name="AddActorButton" Content="+" Width="32" Margin="5 0" Click="AddActorButton_Click"/>
                 <ComboBox x:Name="ActorComboBox" Width="200" SelectionChanged="ActorComboBox_SelectionChanged" />
             </StackPanel>
-            <Expander ExpandDirection="Right">
-                <Rectangle Fill="Black" Width="400" />
+            <Expander x:Name="MainExpander" ExpandDirection="Right">
+                <StackPanel x:Name="ExpanderStackPanel">
+                    <DockPanel x:Name="ExpanderDockInStackPanel" />
+                    <Button x:Name="ExpanderAddPluginButton" Content="Add Plugin" Click="ExpanderAddPluginButton_Click" />
+                </StackPanel>
             </Expander>
-            <TabControl>
+            <TabControl x:Name="MainTab">
+                <!--
                 <TabItem Header="Animations">
                     <Frame>
                         <Frame.Content>
@@ -24,6 +29,7 @@
                         </Frame.Content>
                     </Frame>
                 </TabItem>
+                -->
             </TabControl>
         </DockPanel>        
     </Grid>

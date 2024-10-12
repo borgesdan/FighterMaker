@@ -12,13 +12,16 @@ namespace FighterMaker.Visual.Core
     {
         readonly List<ActorModel> items = [];
 
+        public event EventHandler<ActorModel>? ItemAdded;
+
         public int Count => items.Count;
 
         public bool IsReadOnly => false;
 
         public void Add(ActorModel item)
-        {
+        {            
             items.Add(item);
+            ItemAdded?.Invoke(this, item);
         }
 
         public void Clear()
