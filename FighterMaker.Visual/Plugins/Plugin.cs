@@ -1,6 +1,8 @@
-﻿using FighterMaker.Visual.Models;
+﻿using FighterMaker.Visual.Core.Attributes;
+using FighterMaker.Visual.Models;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -9,6 +11,7 @@ namespace FighterMaker.Visual.Plugins
 {
     public class Plugin
     {
+        [Browsable(false)]
         public ActorModel? Model { get; protected set; } = null;
 
         public void Attach(ActorModel model)

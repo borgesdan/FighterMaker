@@ -1,5 +1,6 @@
 ﻿using FighterMaker.Visual.Controls.PropertiesControlChildren;
 using FighterMaker.Visual.Controls.PropertiesViewChildren;
+using FighterMaker.Visual.Core.Attributes;
 using FighterMaker.Visual.Core.Extensions;
 using System;
 using System.Collections;
@@ -24,7 +25,7 @@ using System.Windows.Shapes;
 namespace FighterMaker.Visual.Controls
 {
     /// <summary>
-    /// Interaction logic for PropertiesControl.xaml
+    /// Representa um controle para exibir campos com valores das propriedades de um modelo.
     /// </summary>
     public partial class PropertiesControl : UserControl
     {
@@ -33,6 +34,9 @@ namespace FighterMaker.Visual.Controls
             public PropertyInfo Source { get; set; } = null!;
             public string Name { get; set; } = string.Empty;
             public object Value { get; set; } = null!;
+            public bool IsItemInCollection { get; set; }
+            public IList Collection { get; set; } = null!;
+            public int ItemInCollectionIndex { get; set; } = 0;
         }
 
         private class Group
@@ -64,7 +68,7 @@ namespace FighterMaker.Visual.Controls
             typeof(uint),
             typeof(long),
             typeof(ulong),
-        };        
+        };
 
         public PropertiesControl()
         {
@@ -78,57 +82,105 @@ namespace FighterMaker.Visual.Controls
 
         public void AnalizeModel()
         {
-            if (model == null)
+            InternalAnalizeModel(model);
+        }
+
+        private void InternalAnalizeModel(object internalModel)
+       {
+            if (internalModel == null)
                 throw new InvalidOperationException();
 
-            var properties = model.GetType().GetProperties();
+            var properties = internalModel.GetType().GetProperties();
 
-            foreach (var property in properties) 
+            foreach (var property in properties)
             {
                 if (property is null || !property.CanRead)
                     continue;
 
-                var propValue = property.GetValue(model);
+                var browsable = property.SelectAttribute<BrowsableAttribute>()?.Browsable ?? false;
+
+                if (browsable)
+                    continue;
+
+                var propValue = property.GetValue(internalModel);
 
                 if (propValue == null)
                     continue;
 
                 var propValueType = propValue.GetType();
 
-                if (!propValueType.IsValueType && propValueType != typeof(string))
+                var groupName = internalModel != model ? internalModel.SelectAttribute<DisplayAttribute>()?.Name : null;
+
+                if (propValueType.IsValueType || propValueType == typeof(string))
                 {
-                    if ((propValueType.IsArray || propValueType.IsGenericList()))
-                    {
-                        var list = propValue as ICollection;
+                    ProcessKnowType(property, propValue, groupName);
+                }
+                else if (propValueType.IsArray || propValueType.IsGenericList())
+                {
+                    ProcessCollection(property, propValue, groupName);
+                }
+            }
+        }
 
-                        if (list == null) continue;
+        private void ProcessKnowType(PropertyInfo property, object propertyValue, string? groupName = null)
+        {
+            var groupItem = new GroupItem
+            {
+                Source = property,
+                Name = property.SelectAttribute<DisplayAttribute>()?.GroupName ?? property.Name,
+                Value = propertyValue
+            };
 
-                        foreach(var listItem in list)
-                        {
-                            if (!listItem.GetType().IsValueType)
-                                break;
+            var _groupName = groupName ?? DefaultGroupName;
+            AddItemInGroup(groupItem, _groupName);            
+        }
 
-                            AddItemInDefaultGroup(new GroupItem { Source = property, Name = property.Name, Value = listItem });
-                        }
-                    }
+        private void ProcessCollection(PropertyInfo property, object propertyValue, string? groupName = null)
+        {
+            if (propertyValue is not IList collection)
+                throw new InvalidOperationException();
 
+            var index = 0;
+            foreach (var listItem in collection)
+            {
+                if (!listItem.GetType().IsValueType)
+                {
+                    ProcessReferenceType(listItem);
                     continue;
                 }
 
-                AddItemInDefaultGroup(new GroupItem { Source = property, Name = property.Name, Value = propValue});
+                var item = new GroupItem
+                {
+                    Source = property,
+                    Name = property.SelectAttribute<DisplayAttribute>()?.GroupName ?? property.Name,
+                    Value = listItem,
+                    IsItemInCollection = true,
+                    Collection = collection,
+                    ItemInCollectionIndex = index
+                };
+
+                var _groupName = groupName ?? DefaultGroupName;
+                AddItemInGroup(item, _groupName);
+
+                index++;
             }
+        }
+
+        private void ProcessReferenceType(object propertyValue)
+        {
+            InternalAnalizeModel(propertyValue);
         }
 
         public void PopulateControl()
         {
-            foreach(var group in groups)
+            foreach (var group in groups)
             {
                 if (!group.Items.Any())
-                    return;                            
+                    return;
 
                 var stackPanel = new StackPanel();
-                
-                foreach(var item in group.Items)
+
+                foreach (var item in group.Items)
                 {
                     var itemValueType = item.Value.GetType();
                     UIElement? uiElement = null;
@@ -139,7 +191,7 @@ namespace FighterMaker.Visual.Controls
 
                         var propertyTextBox = new PropertiesTextBox();
                         propertyTextBox.Margin = new Thickness(2);
-                        propertyTextBox.LabelControl.Content = displayAttribute?.Name ?? item.Name;                        
+                        propertyTextBox.LabelControl.Content = displayAttribute?.Name ?? item.Name;
                         propertyTextBox.ValidType = itemValueType;
                         propertyTextBox.InitialValue = item.Value.ToString();
                         propertyTextBox.ToolTip = displayAttribute?.Description;
@@ -148,8 +200,17 @@ namespace FighterMaker.Visual.Controls
                             if (itemValueType == typeof(double) || itemValueType == typeof(float))
                                 e = e.Replace(",", ".");
 
-                            item.Source.SetValue(model, Convert.ChangeType(e, itemValueType, new CultureInfo("en-US")));
-                        };                        
+                            var value = Convert.ChangeType(e, itemValueType, new CultureInfo("en-US"));
+
+                            if (item.IsItemInCollection)
+                            {
+                                item.Collection[item.ItemInCollectionIndex] = value;
+                            }
+                            else
+                            {
+                                item.Source.SetValue(model, value);
+                            }
+                        };
 
                         uiElement = propertyTextBox;                        
                     }
@@ -165,7 +226,7 @@ namespace FighterMaker.Visual.Controls
 
                 PropertiesStack.Children.Add(groupBox);
             }
-        }        
+        }
 
         private Group GetOrCreateGroup(string groupName)
         {
@@ -175,16 +236,20 @@ namespace FighterMaker.Visual.Controls
             {
                 group = new Group(groupName);
                 groups.Add(group);
-            }    
+            }
 
-            return group;            
+            return group;
+        }
+
+        private void AddItemInGroup(GroupItem item, string groupName)
+        {
+            var group = GetOrCreateGroup(groupName);
+            group.Items.Add(item);
         }
 
         private void AddItemInDefaultGroup(GroupItem item)
         {
-            var group = GetOrCreateGroup(DefaultGroupName);
-
-            group.Items.Add(item);
-        }    
+            AddItemInGroup(item, DefaultGroupName);
+        }
     }
 }

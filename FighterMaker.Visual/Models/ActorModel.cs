@@ -17,14 +17,7 @@ namespace FighterMaker.Visual.Models
         /// <summary>
         /// Obtém ou define a lista de plugins (componentes) do ator.
         /// </summary>        
-        public List<Plugin> Plugins { get; set; } = [];
-
-        public List<double> Teste { get; set; } = new List<double>
-        {
-            5.6,
-            6.7,
-            8.8
-        };
+        public List<Plugin> Plugins { get; set; } = [];        
 
         public void AddPlugin(Plugin plugin)
         {
