@@ -7,7 +7,6 @@
              mc:Ignorable="d" 
              d:DesignHeight="450" d:DesignWidth="200">
     <DockPanel>
-        <Label Content="Properties" DockPanel.Dock="Top" Background="CornflowerBlue" FontWeight="Bold" Foreground="White" />
-        <StackPanel x:Name="PropertiesStack" />
+        <Frame x:Name="MainFrame"></Frame>                
     </DockPanel>
 </UserControl>

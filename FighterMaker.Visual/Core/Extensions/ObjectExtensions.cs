@@ -9,8 +9,8 @@ namespace FighterMaker.Visual.Core.Extensions
 {
     public static class ObjectExtensions
     {
-        public static T? SelectAttribute<T>(this object obj) where T : Attribute
-        {
+        public static T? GetAttribute<T>(this object obj) where T : Attribute
+        { 
             var attributes = obj.GetType().GetCustomAttributes<T>();            
             var attr = attributes.FirstOrDefault();
 

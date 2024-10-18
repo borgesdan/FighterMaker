@@ -29,6 +29,8 @@ namespace FighterMaker.Visual.Controls
     /// </summary>
     public partial class PropertiesControl : UserControl
     {
+        readonly StackPanel mainStackPanel = new StackPanel();
+
         private class GroupItem
         {
             public PropertyInfo Source { get; set; } = null!;
@@ -83,10 +85,10 @@ namespace FighterMaker.Visual.Controls
         public void AnalizeModel()
         {
             InternalAnalizeModel(model);
-        }
+        }        
 
-        private void InternalAnalizeModel(object internalModel)
-       {
+        private void InternalAnalizeModel(object internalModel, string? groupName = null, bool createPageForReferenceType = false)
+        {
             if (internalModel == null)
                 throw new InvalidOperationException();
 
@@ -94,12 +96,7 @@ namespace FighterMaker.Visual.Controls
 
             foreach (var property in properties)
             {
-                if (property is null || !property.CanRead)
-                    continue;
-
-                var browsable = property.SelectAttribute<BrowsableAttribute>()?.Browsable ?? false;
-
-                if (browsable)
+                if (!IsReadble(property) || !IsBrowsable(property))
                     continue;
 
                 var propValue = property.GetValue(internalModel);
@@ -107,69 +104,16 @@ namespace FighterMaker.Visual.Controls
                 if (propValue == null)
                     continue;
 
-                var propValueType = propValue.GetType();
+                var propValueType = propValue.GetType();                               
 
-                var groupName = internalModel != model ? internalModel.SelectAttribute<DisplayAttribute>()?.Name : null;
+                if (string.IsNullOrWhiteSpace(groupName))
+                {
+                    GetGroupName(property, internalModel);
+                }
 
-                if (propValueType.IsValueType || propValueType == typeof(string))
-                {
-                    ProcessKnowType(property, propValue, groupName);
-                }
-                else if (propValueType.IsArray || propValueType.IsGenericList())
-                {
-                    ProcessCollection(property, propValue, groupName);
-                }
+                Process(property, propValue, groupName);                
             }
-        }
-
-        private void ProcessKnowType(PropertyInfo property, object propertyValue, string? groupName = null)
-        {
-            var groupItem = new GroupItem
-            {
-                Source = property,
-                Name = property.SelectAttribute<DisplayAttribute>()?.GroupName ?? property.Name,
-                Value = propertyValue
-            };
-
-            var _groupName = groupName ?? DefaultGroupName;
-            AddItemInGroup(groupItem, _groupName);            
-        }
-
-        private void ProcessCollection(PropertyInfo property, object propertyValue, string? groupName = null)
-        {
-            if (propertyValue is not IList collection)
-                throw new InvalidOperationException();
-
-            var index = 0;
-            foreach (var listItem in collection)
-            {
-                if (!listItem.GetType().IsValueType)
-                {
-                    ProcessReferenceType(listItem);
-                    continue;
-                }
-
-                var item = new GroupItem
-                {
-                    Source = property,
-                    Name = property.SelectAttribute<DisplayAttribute>()?.GroupName ?? property.Name,
-                    Value = listItem,
-                    IsItemInCollection = true,
-                    Collection = collection,
-                    ItemInCollectionIndex = index
-                };
-
-                var _groupName = groupName ?? DefaultGroupName;
-                AddItemInGroup(item, _groupName);
-
-                index++;
-            }
-        }
-
-        private void ProcessReferenceType(object propertyValue)
-        {
-            InternalAnalizeModel(propertyValue);
-        }
+        }   
 
         public void PopulateControl()
         {
@@ -212,7 +156,7 @@ namespace FighterMaker.Visual.Controls
                             }
                         };
 
-                        uiElement = propertyTextBox;                        
+                        uiElement = propertyTextBox;
                     }
 
                     stackPanel.Children.Add(uiElement);
@@ -224,8 +168,12 @@ namespace FighterMaker.Visual.Controls
                     Content = stackPanel
                 };
 
-                PropertiesStack.Children.Add(groupBox);
+                mainStackPanel.Children.Add(groupBox);
             }
+
+            Page page = new Page();
+            page.Content = mainStackPanel;
+            MainFrame.Content = page;
         }
 
         private Group GetOrCreateGroup(string groupName)
@@ -250,6 +198,108 @@ namespace FighterMaker.Visual.Controls
         private void AddItemInDefaultGroup(GroupItem item)
         {
             AddItemInGroup(item, DefaultGroupName);
+        }
+
+        private void Process(PropertyInfo property, object propertyValue, string? groupName)
+        {
+            var propValueType = propertyValue.GetType();
+
+            if (propValueType.IsValueType || propValueType == typeof(string))
+            {
+                ProcessKnowType(property, propertyValue, groupName);
+            }
+            else if (propValueType.IsArray || propValueType.IsGenericList())
+            {
+                ProcessCollection(property, propertyValue, groupName);
+            }
+            else if (propValueType.IsClass)
+            {
+                ProcessReferenceType(property, propertyValue);
+            }
+        }
+
+        private void ProcessKnowType(PropertyInfo property, object propertyValue, string? groupName = null)
+        {
+            var groupItem = new GroupItem
+            {
+                Source = property,
+                Name = property.SelectAttribute<DisplayAttribute>()?.GroupName ?? property.Name,
+                Value = propertyValue
+            };
+
+            var _groupName = groupName ?? DefaultGroupName;
+            AddItemInGroup(groupItem, _groupName);
+        }
+
+        private void ProcessCollection(PropertyInfo property, object propertyValue, string? groupName = null)
+        {
+            if (propertyValue is not IList collection)
+                throw new InvalidOperationException();
+
+            var index = 0;
+            foreach (var listItem in collection)
+            {
+                if (!listItem.GetType().IsValueType)
+                {
+                    ProcessReferenceType(property, listItem);
+                    continue;
+                }
+
+                var item = new GroupItem
+                {
+                    Source = property,
+                    Name = property.SelectAttribute<DisplayAttribute>()?.GroupName ?? property.Name,
+                    Value = listItem,
+                    IsItemInCollection = true,
+                    Collection = collection,
+                    ItemInCollectionIndex = index
+                };
+
+                var _groupName = groupName ?? DefaultGroupName;
+                AddItemInGroup(item, _groupName);
+
+                index++;
+            }
+        }
+
+        private void ProcessReferenceType(PropertyInfo property, object propertyValue)
+        {
+            var displayAttribute = property.SelectAttribute<DisplayAttribute>();
+            InternalAnalizeModel(propertyValue, displayAttribute?.GroupName, true);
+        }
+
+        private string? GetGroupName(PropertyInfo property, object internalModel)
+        {
+            string? groupName = null;
+            var displayAttribute = property.SelectAttribute<DisplayAttribute>();
+
+            if (displayAttribute != null && !string.IsNullOrWhiteSpace(displayAttribute.GroupName))
+            {
+                groupName = displayAttribute.GroupName;
+            }
+            else if (internalModel == model)
+            {
+                groupName = DefaultGroupName;
+            }
+            else
+            {
+                var modelDisplayAttribute = internalModel.GetAttribute<DisplayAttribute>();
+                groupName = modelDisplayAttribute?.GroupName ?? modelDisplayAttribute?.Name;
+            }
+
+            return groupName;
+        }
+
+
+        private static bool IsReadble(PropertyInfo property)
+        {
+            return property is null || property.CanRead;
+        }
+
+        private static bool IsBrowsable(PropertyInfo property)
+        {
+            var browsableAttribute = property.SelectAttribute<BrowsableAttribute>()?.Browsable;
+            return browsableAttribute ?? true;
         }
     }
 }

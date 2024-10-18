@@ -13,5 +13,13 @@ namespace FighterMaker.Visual.Core.Extensions
 
             return default;
         }
+
+        public static T? SelectAttribute<T>(this PropertyInfo property) where T : Attribute
+        {
+            var attributes = property.GetCustomAttributes(typeof(T), false);
+            var attr = attributes.FirstOrDefault();
+
+            return attr as T;
+        }
     }
 }
