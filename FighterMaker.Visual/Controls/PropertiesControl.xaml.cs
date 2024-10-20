@@ -102,13 +102,11 @@ namespace FighterMaker.Visual.Controls
                 var propValue = property.GetValue(internalModel);
 
                 if (propValue == null)
-                    continue;
-
-                var propValueType = propValue.GetType();                               
+                    continue;                                    
 
                 if (string.IsNullOrWhiteSpace(groupName))
                 {
-                    GetGroupName(property, internalModel);
+                    groupName = GetGroupName(property, internalModel);
                 }
 
                 Process(property, propValue, groupName);                
@@ -200,7 +198,7 @@ namespace FighterMaker.Visual.Controls
             AddItemInGroup(item, DefaultGroupName);
         }
 
-        private void Process(PropertyInfo property, object propertyValue, string? groupName)
+        private void Process(PropertyInfo property, object propertyValue, string? groupName, bool createPageForReferenceType = false)
         {
             var propValueType = propertyValue.GetType();
 
@@ -214,6 +212,11 @@ namespace FighterMaker.Visual.Controls
             }
             else if (propValueType.IsClass)
             {
+                if (createPageForReferenceType)
+                {
+                    return;
+                }
+
                 ProcessReferenceType(property, propertyValue);
             }
         }

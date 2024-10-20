@@ -49,7 +49,7 @@ namespace FighterMaker.Visual.Controls.PropertiesControlChildren
                 initialValue = value;
                 ValueTextBox.Text = value;
             }
-        }
+        }        
 
         /// <summary>
         /// Invocado quando o controle perde o foco.
@@ -59,7 +59,7 @@ namespace FighterMaker.Visual.Controls.PropertiesControlChildren
         public PropertiesTextBox()
         {
             InitializeComponent();
-        }
+        }        
 
         private void ValueTextBox_KeyDown(object sender, KeyEventArgs e)
         {

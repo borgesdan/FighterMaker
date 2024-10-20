@@ -32,7 +32,7 @@ namespace FighterMaker.Visual.Pages
     public partial class ActorManagerPage : Page
     {
         private readonly ActorModelCollection actorCollection = [];
-        private readonly Dictionary<ActorModel, PropertiesControl> propertiesControlDictionary = [];
+        private readonly Dictionary<ActorModel, PropertiesTreeView> propertiesControlDictionary = [];
         private ActorModel? currentActor;
 
         public ActorManagerPage()
@@ -51,26 +51,26 @@ namespace FighterMaker.Visual.Pages
             ActorComboBox.SelectedIndex = actorCollection.Count - 1;
         }
 
-        private PropertiesControl GetOrCreatePropertiesViewControl(ActorModel model)
+        private PropertiesTreeView GetOrCreatePropertiesViewControl(ActorModel model)
         {
             Debug.Assert(model != null);
 
-            if (propertiesControlDictionary.TryGetValue(model, out PropertiesControl? control))
+            if (propertiesControlDictionary.TryGetValue(model, out PropertiesTreeView? control))
                 return control;
 
             model.AddPlugin(new AnimationPlugin());
 
-            control = new PropertiesControl();
-            control.Width = 300;
+            control = new PropertiesTreeView();
+            control.Width = 500;
             control.SetModel(model);
-            control.AnalizeModel();
-            control.PopulateControl();
+            control.ScanModel();
+            //control.PopulateControl();
             propertiesControlDictionary.Add(model, control);
 
             return control;
         }
 
-        private void SetCurrentPropertiesControl(PropertiesControl control)
+        private void SetCurrentPropertiesControl(PropertiesTreeView control)
         {
             Debug.Assert(control != null);
 

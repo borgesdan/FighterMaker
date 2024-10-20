@@ -6,12 +6,12 @@
              xmlns:local="clr-namespace:FighterMaker.Visual.Controls.PropertiesControlChildren"
              mc:Ignorable="d" 
              d:DesignHeight="100" d:DesignWidth="800">
-    <Grid>
+    <Grid x:Name="MainGrid">
         <Grid.ColumnDefinitions>
-        <ColumnDefinition  />
+        <!--<ColumnDefinition /> -->
         <ColumnDefinition />
         </Grid.ColumnDefinitions>
-        <Label x:Name="DisplayLabel" Content="" Grid.Column="0" VerticalContentAlignment="Center" HorizontalContentAlignment="Left" />
+        <Label x:Name="DisplayLabel" Content="" Grid.Column="0" VerticalContentAlignment="Center" HorizontalContentAlignment="Left" Visibility="Collapsed" />
         <TextBox x:Name="ValueTextBox" Grid.Column="1" VerticalContentAlignment="Center" KeyDown="ValueTextBox_KeyDown" />
     </Grid>
 </UserControl>
