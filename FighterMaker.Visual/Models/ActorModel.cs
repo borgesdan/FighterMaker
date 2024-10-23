@@ -4,6 +4,18 @@ using System.ComponentModel.DataAnnotations;
 
 namespace FighterMaker.Visual.Models
 {
+    public class Level2
+    {
+        public float Level { get; set; }
+    }
+
+    public class Level1
+    {
+        public int Id { get; set; } = Random.Shared.Next();
+        public string ActorName { get; set; } = "Teste";
+        public Level2 Level2 { get; set; } = new Level2();
+    }    
+
     /// <summary>
     /// Representa um objeto da classe FighterMaker.Mono.Library.Actor
     /// </summary>
@@ -12,10 +24,14 @@ namespace FighterMaker.Visual.Models
         /// <summary>
         /// Obtém ou define o nome do ator.
         /// </summary>        
+        [Browsable(false)]
         [Display(Name = "Name", Description = "Obtém ou define o nome do ator")]
         public string? Name { get; set; }
 
-        public double Price { get; set; }
+        [Browsable(false)]
+        public double PriceTeste { get; set; }
+
+        public Level1 ActorTeste { get; set; } = new Level1();
 
         /// <summary>
         /// Obtém ou define a lista de plugins (componentes) do ator.

@@ -8,6 +8,7 @@
              d:DesignHeight="450" d:DesignWidth="200">
     <Grid>
         <TreeView x:Name="MainTreeView">
+            <!--
             <TreeViewItem x:Name="MainTreeRoot" IsExpanded="True" Header="Root">
                 <ListView x:Name="MainListView">
                     <ListView.View>
@@ -24,6 +25,7 @@
                     </ListView.View>                    
                 </ListView>
             </TreeViewItem>
+            -->
         </TreeView>
     </Grid>
 </UserControl>

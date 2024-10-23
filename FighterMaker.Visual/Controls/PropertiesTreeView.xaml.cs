@@ -27,13 +27,15 @@ namespace FighterMaker.Visual.Controls
     /// </summary>
     public partial class PropertiesTreeView : UserControl
     {
-        public class TreeNode
+        public class PropertyNode(object model)
         {
-            public TreeNode? RootNode { get; set; } = null;
+            public object Model { get; set; } = model;
+            public List<PropertyNode> PropertyNodes { get; set; } = [];
             public List<PropertyInfoBindingHandler> Properties { get; set; } = [];
         }
 
         object? _model;
+        List<PropertyNode> propertyNodes = [];        
 
         public PropertiesTreeView()
         {
@@ -43,18 +45,18 @@ namespace FighterMaker.Visual.Controls
         public void SetModel(object model)
         {
             _model = model;
+            propertyNodes.Add(new PropertyNode(_model));
         }
 
         public void ScanModel()
         {
-            InternalScanModel(_model!);
+            InternalScanModel(propertyNodes.First());
+            PopulateControl();
         }
 
-        private void InternalScanModel(object model)
+        private void InternalScanModel(PropertyNode propertyNode)
         {
-            if (model == null)
-                throw new InvalidOperationException();
-
+            var model = propertyNode.Model ?? throw new InvalidOperationException();
             var properties = model.GetType().GetProperties();
 
             foreach (var property in properties)
@@ -67,25 +69,95 @@ namespace FighterMaker.Visual.Controls
                 if (propertyValue == null)
                     continue;
 
-                Process(property, propertyValue);
+                Process(property, propertyValue, propertyNode);
             }
         }
 
-        private void Process(PropertyInfo property, object propertyValue)
+        private void Process(PropertyInfo property, object propertyValue, PropertyNode propertyNode)
         {
             var propertyValueType = propertyValue.GetType();
 
-            if (propertyValueType.IsValueType || propertyValueType == typeof(string))
+            if (propertyValueType.IsPrimitive || propertyValueType == typeof(string))
             {
-                ProcessKnowType(property, propertyValue, "");
+                ProcessKnowType(property, propertyNode);
+            } 
+            else if (propertyValueType.IsClass)
+            {
+                ProcessReferenceType(property, propertyNode);
             }
         }
 
-        private void ProcessKnowType(PropertyInfo property, object propertyValue, string? groupName = null)
+        private void ProcessKnowType(PropertyInfo property, PropertyNode propertyNode)
         {
-            var handler = new PropertyInfoBindingHandler(_model, property);
-            MainListView.Items.Add(handler);
-        }        
+            //var handler = new PropertyInfoBindingHandler(_model, property);
+            //MainListView.Items.Add(handler);
+
+            var propertyBinding = new PropertyInfoBindingHandler(propertyNode.Model, property);
+            propertyNode.Properties.Add(propertyBinding);
+        }
+
+        private void ProcessReferenceType(PropertyInfo property, PropertyNode propertyNode)
+        {
+            var value = property.GetValue(propertyNode.Model);
+            var node = new PropertyNode(value);
+            propertyNode.PropertyNodes.Add(node);
+
+            InternalScanModel(node);
+        }
+
+        private void PopulateControl()
+        {
+            foreach (var node in propertyNodes)
+            {
+                var treeViewItem = PopulateNode(node, null);                
+            }
+        }   
+        
+        private TreeViewItem PopulateNode(PropertyNode node, TreeViewItem? rootNode)
+        {
+            var item = new TreeViewItem();
+            item.Header = node.Model.ToString();
+            item.Tag = node.Model;
+            item.IsExpanded = true;
+
+            if (node.Properties.Any())
+            {
+                var listView = new ListView();
+                var gridView = new GridView();
+
+                gridView.Columns.Add(new GridViewColumn()
+                {
+                    Header = "Name",
+                    DisplayMemberBinding = new Binding("Name")
+                });
+
+                gridView.Columns.Add(new GridViewColumn()
+                {
+                    Header = "Value",
+                    DisplayMemberBinding = new Binding("Value")
+                });
+
+                listView.View = gridView;
+                listView.ItemsSource = node.Properties;
+
+                item.Items.Add(listView);
+            }            
+
+            if (rootNode == null)
+                MainTreeView.Items.Add(item);
+            else
+                rootNode.Items.Add(item);
+
+            if (node.PropertyNodes.Any())
+            {
+                foreach (var propertyNode in node.PropertyNodes)
+                {
+                    PopulateNode(propertyNode, item);
+                }
+            }
+
+            return item;
+        }
 
         private static bool IsReadble(PropertyInfo property)
         {
